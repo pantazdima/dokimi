@@ -9041,7 +9041,7 @@ function statisticalSlots(date) {
   return moveSlotsOn(date, [...slots.values()]);
 }
 function hourDescription(s) {
-  return s.manual ? 'Εκτός ωρολογίου · 1 ώρα' : s.hour + 'η' + movedLabel(s);
+  return s.manual ? 'Εκτός ωρολογίου · 1 ώρα' : slotHourShown(s) + 'η' + movedLabel(s);
 }
 function renderStatResultsRaw() {
   setTimeout(() => {
@@ -10742,8 +10742,8 @@ function historyDetails(e) {
       });
     const x = lines.get(key);
     x.groups.add(s.groupName || historyGroupName(e, s.groupId));
-    x.hours.add(s.hour);
-    if (s.movedHour) x.moved = { ...x.moved, [s.hour]: s.movedHour };
+    x.hours.add(slotHourShown(s));
+    if (s.movedHour && !s.atHour) x.moved = { ...x.moved, [s.hour]: s.movedHour };
   }
   const list = [...lines.values()]
     .sort((a, b) => a.order - b.order || a.course.localeCompare(b.course, 'el'))
@@ -11244,8 +11244,8 @@ function lossDetailRows(r) {
     const l = row.lessons.get(c);
     if (x.s.manual) l.manual++;
     else {
-      l.hours.push(x.s.hour);
-      if (x.s.movedHour) l.moved = { ...l.moved, [x.s.hour]: x.s.movedHour };
+      l.hours.push(slotHourShown(x.s));
+      if (x.s.movedHour && !x.s.atHour) l.moved = { ...l.moved, [x.s.hour]: x.s.movedHour };
     }
     row.n++;
   }
@@ -12905,7 +12905,7 @@ function swapsPanelHTML(r) {
  <h4>Όλες οι αναπληρώσεις και αλλαγές</h4><div class="scroll"><table class="swap-table swap-list"><thead><tr><th>Ημερομηνία</th><th>Τμήμα</th><th>Ώρα</th><th>Τι έγινε</th><th>Αιτία</th></tr></thead><tbody>${list
    .map(
      x =>
-       `<tr><td>${esc(grDates(x.date))}</td><td>${esc(x.s.groupName || gname(x.s.groupId))}</td><td>${x.s.hour}η</td><td>${swapChangeHTML(x)}${EXAM_TYPES[x.exam] ? '<div class="exam-line">📝 ' + esc(EXAM_TYPES[x.exam]) + '</div>' : ''}</td><td>${esc(x.reason)}${x.detail ? '<div class="muted">' + esc(x.detail) + '</div>' : ''}</td></tr>`
+       `<tr><td>${esc(grDates(x.date))}</td><td>${esc(x.s.groupName || gname(x.s.groupId))}</td><td>${slotHourShown(x.s)}η</td><td>${swapChangeHTML(x)}${EXAM_TYPES[x.exam] ? '<div class="exam-line">📝 ' + esc(EXAM_TYPES[x.exam]) + '</div>' : ''}</td><td>${esc(x.reason)}${x.detail ? '<div class="muted">' + esc(x.detail) + '</div>' : ''}</td></tr>`
    )
    .join('')}</tbody></table></div>`;
 }
@@ -14565,11 +14565,11 @@ function logSlotChecked(key) {
 function logSlotRowHTML(r) {
   const keys = r.slots.map(slotKeyOf),
     on = keys.filter(logSlotChecked),
-    from = r.slots.filter(s => s.at !== s.hour);
+    from = r.slots.filter(s => s.at !== s.hour && !s.atHour); // 2.4: όχι για μάθημα από άλλη ημέρα (ώρα του ωρολογίου που «κρατά»)
   return `<div class="lc-row${on.length ? ' has-hours' : ''}" data-row="${esc(r.key)}"><label class="lc-course"><input type="checkbox" data-lc="${esc(r.key)}" ${on.length ? 'checked' : ''} onchange="logCourseToggle(this)"><span>${esc(r.name)}${from.length ? `<small class="lc-from">σήμερα · από ${from.map(s => s.hour + 'η').join(', ')}</small>` : ''}</span></label><div class="lc-hours">${r.slots
     .map(
       s =>
-        `<label class="lc-hour" title="${s.at}η ώρα${s.at !== s.hour ? ' σήμερα (στο ωρολόγιο ' + s.hour + 'η)' : ' στο πρόγραμμα'}"><input type="checkbox" data-lsh="${esc(slotKeyOf(s))}" ${logSlotChecked(slotKeyOf(s)) ? 'checked' : ''} onchange="logHourToggle(this)"><span>${s.at}η</span></label>`
+        `<label class="lc-hour" title="${s.at}η ώρα${s.at !== s.hour && !s.atHour ? ' σήμερα (στο ωρολόγιο ' + s.hour + 'η)' : ' στο πρόγραμμα'}"><input type="checkbox" data-lsh="${esc(slotKeyOf(s))}" ${logSlotChecked(slotKeyOf(s)) ? 'checked' : ''} onchange="logHourToggle(this)"><span>${s.at}η</span></label>`
     )
     .join('')}</div></div>`;
 }
@@ -14651,6 +14651,10 @@ function withMove(x, moveOf) {
   if (m && m !== x.hour) x.movedHour = m;
   return x;
 }
+// 2.4 (τελική): η ώρα που φαίνεται για μια ώρα της καταγραφής (για μάθημα από άλλη ημέρα σε ώρα που άδειασε: εκείνη η ώρα)
+function slotHourShown(s) {
+  return s.atHour ? s.movedHour || s.atHour : s.hour;
+}
 function withoutMove(s) {
   if (!s || s.movedHour === undefined) return s;
   const { movedHour: _m, ...rest } = s;
@@ -14665,7 +14669,7 @@ function movedLabel(s) {
       ' ' +
       shortDate(s.movedFrom) +
       ')' +
-      (s.movedHour ? ' (έγινε ' + s.movedHour + 'η)' : '')
+      (s.movedHour && s.movedHour !== s.atHour ? ' (έγινε ' + s.movedHour + 'η)' : '')
     );
   return s?.movedHour ? ' (έγινε ' + s.movedHour + 'η)' : '';
 }
@@ -14917,7 +14921,8 @@ function dayState(date, gid, events = data.events) {
         recAt: at.find(o => o.x.movedHour)?.x.movedHour || 0
       };
     L.lostUnplaced = L.lessonLost && !L.to && !L.recAt;
-    L.pos = L.to || L.recAt || (L.lostUnplaced ? 0 : L.hour);
+    // 2.4 (τελική): μάθημα από άλλη ημέρα σε ώρα που άδειασε (s.atHour): εκεί, όχι στην ώρα του ωρολογίου που «κρατά»
+    L.pos = L.to || L.recAt || (L.lostUnplaced ? 0 : L.s.atHour || L.hour);
     return L;
   });
   // χαμένο μάθημα σε ώρα όπου μπήκε άλλο: δεν είναι πια σε καμία ώρα
@@ -14987,6 +14992,7 @@ function dayJointGroups(jid) {
 // τροποποιούνται μαζί όλα της τα τμήματα
 function dayFixedAt(L, mine = true, unit = null) {
   if (L.lostUnplaced) return 0;
+  if (L.s.atHour) return L.recAt || L.s.atHour; // 2.4 (τελική): μάθημα από άλλη ημέρα σε ώρα που άδειασε: μένει εκεί
   if (L.s.joint && !(unit && dayJointGroups(L.s.joint).every(g => unit.includes(g)))) return L.hour;
   if (L.recs.some(o => (o.e.type || 'loss') !== 'loss' || o.x.movedHour)) return L.recAt || L.to || L.hour;
   if (L.plan && !mine) return L.to;
@@ -14995,10 +15001,18 @@ function dayFixedAt(L, mine = true, unit = null) {
 // έλεγχος ενός τμήματος: assign = Map(ώρα σήμερα → ώρα ωρολογίου του μαθήματος)
 function dayPlanCheck(st, assign, unit = null) {
   const issues = [],
-    who = L => L.name + ' (' + L.hour + 'η)',
+    who = L => L.name + (L.s.movedFrom ? ' (από ' + moveShort(L.s.movedFrom) + ')' : ' (' + L.hour + 'η)'),
     mine = L => !L.plan || canEditEvent(L.plan);
   for (const L of st.lessons) {
     const at = [...assign].filter(([, k]) => k === L.hour).map(([h]) => h);
+    if (L.s.atHour && !L.lostUnplaced) {
+      const f = dayFixedAt(L);
+      if (!at.includes(f) || at.length > 1)
+        issues.push(
+          who(L) + ': μεταφέρθηκε στην ' + f + 'η, που πρέπει να μείνει κενή. Για αλλαγή, διαγράψτε πρώτα τη μεταφορά.'
+        );
+      continue;
+    }
     if (L.lostUnplaced) {
       if (at.length) issues.push(who(L) + ': είναι καταγεγραμμένο ως χαμένο και δεν μπαίνει σε ώρα.');
       continue;
@@ -15112,12 +15126,18 @@ function dayUnitAssigns(us) {
 // προβλήματα στο αποθηκευμένο πρόγραμμα ημέρας (μόνο αν τα τμήματα έχουν πρόγραμμα ημέρας)
 function dayPlanIssues(date, gid, events = data.events) {
   const gids = dayUnit(gid);
-  if (!events.some(e => isDayPlan(e) && e.date === date && e.groupIds.some(g => gids.includes(g)))) return [];
+  if (
+    !events.some(e => isDayPlan(e) && e.date === date && e.groupIds.some(g => gids.includes(g))) &&
+    !dayAtGids(date).some(g => gids.includes(g))
+  )
+    return [];
   const us = dayUnitState(date, gids, events);
   return dayUnitCheck(us, dayUnitAssigns(us));
 }
 function dayActualMap(date, events = data.events) {
-  const gids = [...new Set(events.filter(e => isDayPlan(e) && e.date === date).flatMap(e => e.groupIds))];
+  const gids = [
+    ...new Set([...events.filter(e => isDayPlan(e) && e.date === date).flatMap(e => e.groupIds), ...dayAtGids(date)])
+  ];
   if (!gids.length) return null;
   const m = new Map();
   for (const gid of gids) for (const L of dayState(date, gid, events).lessons) m.set(gid + '|' + L.hour, L.act);
@@ -15207,7 +15227,10 @@ function dayPlanBreaks(changed, next) {
 function dayPlanSummary(st) {
   const moved = st.lessons.filter(L => L.to && L.to !== L.hour).sort((a, b) => a.to - b.to),
     taken = new Set(st.lessons.map(L => L.act).filter(Boolean)),
-    gaps = st.lessons.map(L => L.hour).filter(h => !taken.has(h));
+    gaps = st.lessons
+      .filter(L => !L.s.atHour)
+      .map(L => L.hour)
+      .filter(h => !taken.has(h));
   return [
     ...moved.map(L => L.to + 'η ' + L.name + ' (από ' + L.hour + 'η)'),
     ...(gaps.length ? ['κενές: ' + gaps.map(h => h + 'η').join(', ')] : [])
@@ -15410,7 +15433,18 @@ function dayPlanEditStart(date, gid) {
   };
 }
 function dayHasMoves(ed) {
-  return ed.gids.some(g => [...ed.assigns.get(g)].some(([h, k]) => k && k !== h));
+  return ed.gids.some(g => {
+    const st = dayState(ed.date, g);
+    return [...ed.assigns.get(g)].some(([h, k]) => k && k !== h && dayAtOf(st, k) !== h);
+  });
+}
+// 2.4 (τελική): η ώρα όπου έγινε το μάθημα που ήρθε από άλλη ημέρα σε ώρα που άδειασε (0 για τα άλλα)
+function dayAtOf(st, k) {
+  return st.lessons.find(L => L.hour === k)?.s.atHour || 0;
+}
+// τμήματα με μάθημα από άλλη ημέρα σε ώρα που άδειασε (το πρόγραμμά τους ελέγχεται όπως με τροποποίηση)
+function dayAtGids(date) {
+  return (data.dayMoves || []).filter(m => m.toDate === date && m.slotHour).map(m => m.groupIds[0]);
 }
 function dayReasonOk(ed) {
   return (
@@ -15447,7 +15481,7 @@ function dayOptionsHTML(st, h, cur, unit) {
     .filter(L => !L.lostUnplaced && (!fixed(L) || fixed(L) === h))
     .map(
       L =>
-        `<option value="${L.hour}" ${cur === L.hour ? 'selected' : ''}>${esc(L.name)}${L.s.joint ? ' ↔' : ''}${L.hour !== h ? ' (' + L.hour + 'η)' : ''}${L.lost ? ' · χαμένη' : ''}</option>`
+        `<option value="${L.hour}" ${cur === L.hour ? 'selected' : ''}>${esc(L.name)}${L.s.joint ? ' ↔' : ''}${L.s.movedFrom ? ' (από ' + esc(moveShort(L.s.movedFrom)) + ')' : L.hour !== h ? ' (' + L.hour + 'η)' : ''}${L.lost ? ' · χαμένη' : ''}</option>`
     )
     .join('');
 }
@@ -15465,7 +15499,7 @@ function dayRowsHTML(st) {
             : '';
   const rows = [1, 2, 3, 4, 5, 6, 7]
     .map(h => {
-      const orig = st.lessons.find(L => L.hour === h),
+      const orig = st.lessons.find(L => L.hour === h && !L.s.atHour),
         cur = a.get(h) || 0,
         fixedHere = st.lessons.find(L => dayFixedAt(L, true, unit) === h);
       return `<div class="dp-row${cur && cur !== h ? ' moved' : ''}${!cur ? ' empty' : ''}"><span class="dp-h">${h}η</span><span class="dp-orig">${orig ? esc(orig.name) : '<span class="muted">—</span>'}${orig && note(orig) ? `<small${orig.lost ? ' class="lost"' : ''}>${esc(note(orig))}</small>` : ''}</span><select data-dpg="${st.gid}" data-dph="${h}" aria-label="${h}η ώρα σήμερα" ${fixedHere ? 'disabled' : ''} onchange="dayPlanPick(${h},this.value,'${st.gid}')"><option value="">κενό</option>${dayOptionsHTML(st, h, cur, unit)}</select></div>`;
@@ -15488,7 +15522,7 @@ function dayGridHTML(us) {
   const cell = (g, h) => {
     const st = us.sts.get(g),
       cur = ed.assigns.get(g).get(h) || 0,
-      orig = st.lessons.find(L => L.hour === h),
+      orig = st.lessons.find(L => L.hour === h && !L.s.atHour),
       fixedHere = st.lessons.find(L => dayFixedAt(L, true, us.gids) === h),
       notes = [];
     if (orig?.lost) notes.push(`<small class="lost">χαμένη: ${esc(orig.name)} · ${esc(orig.lossLabel)}</small>`);
@@ -15590,7 +15624,7 @@ function dayPlanApply(date, gids, assigns, reason = '', other = '') {
   const us = dayUnitState(date, gids),
     issues = dayUnitCheck(us, assigns);
   if (issues.length) return issues[0];
-  const moved = g => [...assigns.get(g)].filter(([h, k]) => k && k !== h),
+  const moved = g => [...assigns.get(g)].filter(([h, k]) => k && k !== h && dayAtOf(us.sts.get(g), k) !== h),
     any = gids.some(g => moved(g).length),
     text =
       reason === 'Άλλο'
@@ -16126,7 +16160,7 @@ function dayPrintCellHTML(g, h, sts) {
     const L = st.lessons.find(L => L.act === h);
     if (!L || L.lost) {
       // είχε μάθημα (στο ωρολόγιο ή μετακινημένο) και δεν έγινε, και οι μαθητές του δεν έχουν μάθημα αλλού: «κενό»
-      if ((L || st.lessons.some(M => M.hour === h)) && !busy(gid)) {
+      if ((L || st.lessons.some(M => M.hour === h && !M.s.atHour)) && !busy(gid)) {
         gaps++;
         out.push(
           `<div class="lesson">${gid === me ? '' : `<span class="section">${esc(gname(gid))}</span>`}<span class="gap">κενό</span></div>`
@@ -16140,7 +16174,7 @@ function dayPrintCellHTML(g, h, sts) {
     seen.add(key);
     const label = gid === me && !j ? '' : `<span class="section">${esc(j ? j.name : gname(gid))}</span>`;
     out.push(
-      `<div class="lesson">${label}<strong>${esc(j ? jointCourseName(j) : L.name)}</strong>${L.act !== L.hour ? `<small>(από ${L.hour}η)</small>` : ''}${L.s.movedFrom ? `<small>(από ${esc(moveShort(L.s.movedFrom))})</small>` : ''}</div>`
+      `<div class="lesson">${label}<strong>${esc(j ? jointCourseName(j) : L.name)}</strong>${L.act !== L.hour && !L.s.atHour ? `<small>(από ${L.hour}η)</small>` : ''}${L.s.movedFrom ? `<small>(από ${esc(moveShort(L.s.movedFrom))})</small>` : ''}</div>`
     );
   }
   // κανένα μάθημα για τους μαθητές του τμήματος: ένα «κενό»
@@ -18101,8 +18135,11 @@ function mergeDropDay(id, date) {
   return true;
 }
 /* ---------- 2.4 (τελική): μεταφορά μαθήματος σε άλλη ημέρα της ίδιας εβδομάδας (μόνο ο διαχειριστής) ----------
-   Π.χ. τα Θρησκευτικά του Β1 (Παρασκευή 3η) γίνονται την Τετάρτη 2η: σε ώρα χωρίς μάθημα ή με ανταλλαγή με το μάθημα
-   εκείνης της ώρας (που πηγαίνει την Παρασκευή 3η). Το μάθημα φεύγει από τη μία ημέρα και έρχεται στην άλλη για όλα:
+   Π.χ. τα Θρησκευτικά του Β1 (Παρασκευή 3η) γίνονται την Τετάρτη 2η: σε κενή ώρα του προγράμματος της ημέρας (και σε
+   ώρα που άδειασε με τροποποίηση ή με άδεια / απουσία εκπαιδευτικού) ή με ανταλλαγή με το μάθημα εκείνης της ώρας (που
+   πηγαίνει την Παρασκευή 3η). Κάθε μάθημα της ημέρας ξεχωρίζει από την ώρα του στο ωρολόγιο· σε ώρα που άδειασε, το
+   μάθημα «κρατά» μια ώρα του ωρολογίου χωρίς μάθημα του τμήματος (slotHour) και γίνεται στην κενή ώρα (toHour, στο
+   slot ως atHour). Αν το τμήμα έχει 7 μαθήματα στο ωρολόγιο εκείνη την ημέρα (π.χ. Α1), τέτοια ώρα δεν υπάρχει. Το μάθημα φεύγει από τη μία ημέρα και έρχεται στην άλλη για όλα:
    πρόγραμμα της ημέρας, Καταγραφή ωρών, αναπληρώσεις, εκτυπώσεις, στατιστικά (οι προβλεπόμενες ώρες μένουν ίδιες στο
    σύνολο). Καταγράφεται την ημέρα που γίνεται. Στη μνήμη data.dayMoves· στο αρχείο μαζί με τις καταγραφές (type 'move').
    Οι παλαιότερες εκδόσεις δεν διαβάζουν δεδομένα με μεταφορά (μέχρι την ενημέρωση), χωρίς να χαθεί τίποτα. */
@@ -18118,6 +18155,7 @@ const MOVE_REASON = 'Μεταφορά μαθήματος σε άλλη ημέρ�
     'slotSnapshots',
     'fromHour',
     'toHour',
+    'slotHour',
     'slot',
     'swapSlot',
     'reason',
@@ -18128,7 +18166,7 @@ const MOVE_REASON = 'Μεταφορά μαθήματος σε άλλη ημέρ�
     'by',
     'editedBy'
   ];
-let mvDraft = null; // η φόρμα: { date, grade, lesson: 'τμήμα|ώρα', to, hour, reason, other }
+let mvDraft = null; // η φόρμα: { date, grade, lesson: 'τμήμα|ώρα ωρολογίου', to, hour, reason, other }
 function isDayMove(e) {
   return !!e && e.type === 'move';
 }
@@ -18181,6 +18219,7 @@ function moveValidate(m, eventIds = new Set()) {
     !hour(m.toHour) ||
     !slot(m.slot, m.date, m.fromHour) ||
     (m.swapSlot !== undefined && !slot(m.swapSlot, m.toDate, m.toHour)) ||
+    (m.slotHour !== undefined && (!hour(m.slotHour) || m.slotHour === m.toHour || m.swapSlot !== undefined)) ||
     m.reason !== MOVE_REASON ||
     !str(m.planReason, 300) ||
     !m.planReason.trim() ||
@@ -18213,8 +18252,9 @@ function moveSlot(m, side) {
     ...s,
     id: 'mv' + m.id + side,
     day: weekday(to),
-    hour: a ? m.toHour : m.fromHour,
-    movedFrom: a ? m.date : m.toDate
+    hour: a ? m.slotHour || m.toHour : m.fromHour,
+    movedFrom: a ? m.date : m.toDate,
+    ...(a && m.slotHour ? { atHour: m.toHour } : {})
   };
 }
 function moveSlotsOn(date, slots, periodId = '') {
@@ -18234,7 +18274,7 @@ function moveSlotsOn(date, slots, periodId = '') {
       if (here(k, m.slot)) map.delete(k);
       if (m.swapSlot && !map.has(k)) map.set(k, moveSlot(m, 'b'));
     } else {
-      const k = g + '|' + m.toHour;
+      const k = g + '|' + (m.slotHour || m.toHour);
       if (m.swapSlot && here(k, m.swapSlot)) map.delete(k);
       if (!map.has(k)) map.set(k, moveSlot(m, 'a'));
     }
@@ -18305,22 +18345,26 @@ function moveLessons(date, grade) {
       .map(L => ({ gid: g, L, key: g + '|' + L.hour }))
   );
 }
-// η ώρα στην άλλη ημέρα: ελεύθερη, ανταλλαγή με το μάθημα εκείνης της ώρας ή «δεν γίνεται»
+// η ώρα στην άλλη ημέρα, όπως είναι το πρόγραμμα της ημέρας (με την τροποποίηση): κενή, ανταλλαγή με το μάθημα
+// εκείνης της ώρας ή «δεν γίνεται»· κενή είναι και η ώρα μαθήματος που χάθηκε (άδεια / απουσία εκπαιδευτικού)
 function moveTarget(gid, to, h) {
   const st = dayState(to, gid),
-    base = st.lessons.find(L => L.hour === h),
-    there = st.lessons.find(L => L.act === h && L !== base);
-  if (base) {
-    if (base.s.joint) return { ok: false, text: base.name + ' (συνδιδασκαλία)' };
-    if (base.s.movedFrom) return { ok: false, text: base.name + ' (μεταφορά)' };
-    if (base.act !== h) return { ok: false, text: 'μετακινημένο ' + base.name };
-    if (base.recs.length) return { ok: false, text: base.name + ' (έχει καταγραφή)' };
-    return { ok: true, swap: base, text: 'ανταλλαγή με ' + base.name };
+    here = st.lessons.find(L => L.act === h && !L.lostUnplaced);
+  if (here) {
+    if (here.s.joint) return { ok: false, text: here.name + ' (συνδιδασκαλία)' };
+    if (here.s.movedFrom) return { ok: false, text: here.name + ' (μεταφορά)' };
+    if (here.hour !== h) return { ok: false, text: here.name + ' (από την τροποποίηση)' };
+    if (here.recs.length) return { ok: false, text: here.name + ' (έχει καταγραφή)' };
+    return { ok: true, swap: here, text: 'ανταλλαγή με ' + here.name };
   }
-  if (there) return { ok: false, text: there.name + ' (από το πρόγραμμα της ημέρας)' };
   const busy = dayBusyGroups(to, gid, h);
   if (busy.length) return { ok: false, text: 'μάθημα σε ' + busy.map(gname).join(', ') + ' (κοινοί μαθητές)' };
-  return { ok: true, swap: null, text: 'ελεύθερη' };
+  // η ώρα του ωρολογίου που «κρατά» το μάθημα: η ίδια, αν το τμήμα δεν έχει εκεί μάθημα στο ωρολόγιο· αλλιώς άλλη χωρίς μάθημα
+  const used = new Set(st.lessons.map(L => L.hour)),
+    free = x => !used.has(x) && !moveRecords(to, gid, x).length,
+    slotHour = free(h) ? h : [1, 2, 3, 4, 5, 6, 7].find(free);
+  if (!slotHour) return { ok: false, text: 'δεν χωρά άλλο μάθημα (7 μαθήματα στο ωρολόγιο)' };
+  return { ok: true, swap: null, slotHour, text: 'κενή' };
 }
 // όλα τα προβλήματα της τάξης στις δύο ημέρες (όπως στο Πρόγραμμα ημέρας)
 function moveUnitIssues(date, gid) {
@@ -18353,9 +18397,12 @@ function moveBreaks(days, gid, next) {
 function moveIssue(d) {
   if (!d.lesson) return 'Επιλέξτε μάθημα.';
   if (!d.to) return 'Επιλέξτε ημέρα.';
-  if (!d.hour) return 'Επιλέξτε ώρα.';
-  const gid = d.lesson.split('|')[0],
-    L = moveLessons(d.date, d.grade).find(x => x.key === d.lesson)?.L;
+  const gid = d.lesson.split('|')[0];
+  if (!d.hour)
+    return [1, 2, 3, 4, 5, 6, 7].some(h => moveTarget(gid, d.to, h).ok)
+      ? 'Επιλέξτε ώρα.'
+      : 'Την ' + dayLabel(d.to) + ' δεν υπάρχει κενή ώρα ούτε μάθημα για ανταλλαγή.';
+  const L = moveLessons(d.date, d.grade).find(x => x.key === d.lesson)?.L;
   if (!L) return 'Το μάθημα δεν μπορεί να μεταφερθεί (έχει καταγραφή ή άλλαξε ώρα).';
   if (!moveWeekDays(d.date).includes(d.to) || d.to === d.date)
     return 'Επιλέξτε άλλη διδακτική ημέρα της ίδιας εβδομάδας.';
@@ -18377,12 +18424,19 @@ function moveFormHTML(date, grade) {
     lessons = moveLessons(date, grade),
     days = moveWeekDays(date).filter(x => x !== date),
     gid = d.lesson.split('|')[0],
-    hours = d.lesson && d.to ? [1, 2, 3, 4, 5, 6, 7].map(h => [h, moveTarget(gid, d.to, h)]) : [],
+    hours =
+      d.lesson && d.to ? [1, 2, 3, 4, 5, 6, 7].map(h => [h, moveTarget(gid, d.to, h)]).filter(([, t]) => t.ok) : [],
+    empty = hours.filter(([, t]) => !t.swap),
+    swaps = hours.filter(([, t]) => t.swap),
+    opt = (h, text) => `<option value="${h}" ${h === d.hour ? 'selected' : ''}>${esc(text)}</option>`,
+    // το μάθημα χωρίς την ώρα του· η ώρα μόνο όταν το ίδιο μάθημα έχει δύο ώρες την ημέρα
+    twice = x => lessons.filter(y => y.gid === x.gid && y.L.name === x.L.name).length > 1,
+    lessonText = x => gname(x.gid) + ' · ' + x.L.name + (twice(x) ? ' (' + x.L.hour + 'η ώρα)' : ''),
     issue = moveIssue(d),
     week = moveList().filter(m => m.grade === grade && isoMonday(m.date) === isoMonday(date));
   return `<details class="mv-box" ${d.open || week.length ? 'open' : ''} ontoggle="mvDraft&&(mvDraft.open=this.open)"><summary>Μεταφορά μαθήματος σε άλλη ημέρα της εβδομάδας</summary>
- <div class="grid"><label class="field">Μάθημα<select id="mvLesson" onchange="mvSet('lesson',this.value)"><option value="">— Επιλέξτε μάθημα —</option>${lessons.map(x => `<option value="${x.key}" ${x.key === d.lesson ? 'selected' : ''}>${esc(gname(x.gid) + ' · ' + x.L.hour + 'η ' + x.L.name)}</option>`).join('')}</select></label><label class="field">Ημέρα<select id="mvDay" onchange="mvSet('to',this.value)"><option value="">— Επιλέξτε ημέρα —</option>${days.map(x => `<option value="${x}" ${x === d.to ? 'selected' : ''}>${esc(dayLabel(x))}</option>`).join('')}</select></label><label class="field">Ώρα<select id="mvHour" onchange="mvSet('hour',this.value)" ${hours.length ? '' : 'disabled'}><option value="">— Επιλέξτε ώρα —</option>${hours.map(([h, t]) => `<option value="${h}" ${h === d.hour ? 'selected' : ''} ${t.ok ? '' : 'disabled'}>${h}η · ${esc(t.text)}</option>`).join('')}</select></label><label class="field">Λόγος<select id="mvReason" onchange="mvSet('reason',this.value)"><option value="">— Επιλέξτε λόγο —</option>${PLAN_REASONS.map(r => `<option ${d.reason === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></label>${d.reason === 'Άλλο' ? `<label class="field">Περιγραφή του λόγου<input id="mvOther" maxlength="300" value="${esc(d.other)}" oninput="mvSet('other',this.value)"></label>` : ''}</div>
- <p class="muted">Το μάθημα φεύγει από αυτή την ημέρα και γίνεται στην άλλη, σε ώρα χωρίς μάθημα ή με ανταλλαγή (το άλλο μάθημα έρχεται εδώ). Φαίνεται και στις δύο ημέρες· καταγράφεται την ημέρα που γίνεται.</p>
+ <div class="grid"><label class="field">Μάθημα<select id="mvLesson" onchange="mvSet('lesson',this.value)"><option value="">— Επιλέξτε μάθημα —</option>${lessons.map(x => `<option value="${x.key}" ${x.key === d.lesson ? 'selected' : ''}>${esc(lessonText(x))}</option>`).join('')}</select></label><label class="field">Ημέρα<select id="mvDay" onchange="mvSet('to',this.value)"><option value="">— Επιλέξτε ημέρα —</option>${days.map(x => `<option value="${x}" ${x === d.to ? 'selected' : ''}>${esc(dayLabel(x))}</option>`).join('')}</select></label><label class="field">Ώρα<select id="mvHour" onchange="mvSet('hour',this.value)" ${hours.length ? '' : 'disabled'}><option value="">— Επιλέξτε ώρα —</option>${empty.length ? `<optgroup label="Κενές ώρες">${empty.map(([h]) => opt(h, h + 'η · κενή')).join('')}</optgroup>` : ''}${swaps.length ? `<optgroup label="Ανταλλαγή με το μάθημα της ώρας">${swaps.map(([h, t]) => opt(h, h + 'η · ' + t.text)).join('')}</optgroup>` : ''}</select></label><label class="field">Λόγος<select id="mvReason" onchange="mvSet('reason',this.value)"><option value="">— Επιλέξτε λόγο —</option>${PLAN_REASONS.map(r => `<option ${d.reason === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></label>${d.reason === 'Άλλο' ? `<label class="field">Περιγραφή του λόγου<input id="mvOther" maxlength="300" value="${esc(d.other)}" oninput="mvSet('other',this.value)"></label>` : ''}</div>
+ <p class="muted">Το μάθημα φεύγει από αυτή την ημέρα και γίνεται στην άλλη: σε κενή ώρα του προγράμματος εκείνης της ημέρας (όπως είναι μετά την τροποποίηση) ή με ανταλλαγή (το άλλο μάθημα έρχεται εδώ). Φαίνεται και στις δύο ημέρες· καταγράφεται την ημέρα που γίνεται.</p>
  <div class="notice${issue ? '' : ' success'}" id="mvIssue">${issue ? esc(issue) : 'Έτοιμο για μεταφορά.'}</div>
  <div class="row mv-actions"><button type="button" class="primary" onclick="mvSave()">Μεταφορά</button></div>
  ${week.length ? `<h4>Μεταφορές της εβδομάδας</h4><div class="dp-list">${week.map(moveItemHTML).join('')}</div>` : ''}</details>`;
@@ -18438,6 +18492,7 @@ function mvSave() {
       toHour: d.hour,
       slot: clean(L.s),
       ...(t.swap ? { swapSlot: clean(t.swap.s) } : {}),
+      ...(!t.swap && t.slotHour !== d.hour ? { slotHour: t.slotHour } : {}),
       reason: MOVE_REASON,
       planReason: d.reason,
       ...(d.reason === 'Άλλο' ? { planOther: d.other.trim() } : {}),
@@ -18461,13 +18516,17 @@ function mvSave() {
   );
   return true;
 }
-// διαγραφή: μόνο χωρίς καταγραφές του τμήματος τις δύο ημέρες (γίνονται με τη μεταφορά) και χωρίς πρόγραμμα ημέρας
+// διαγραφή: μόνο χωρίς καταγραφές των μαθημάτων της μεταφοράς (στις ώρες τους τις δύο ημέρες) και χωρίς πρόγραμμα ημέρας
+// (εκτός από την τροποποίηση που άδειασε την ώρα όπου ήρθε το μάθημα: δεν το περιέχει, το μάθημα μένει σταθερό εκεί)
 function moveRemove(id) {
   const m = (data.dayMoves || []).find(x => x.id === id);
   if (!m || isUser()) return false;
   const gid = m.groupIds[0];
-  for (const d of [m.date, m.toDate]) {
-    if (moveRecords(d, gid).length)
+  for (const [d, h] of [
+    [m.date, m.fromHour],
+    [m.toDate, m.slotHour || m.toHour]
+  ]) {
+    if (moveRecords(d, gid, h).length)
       return (
         warn(
           gname(gid) +
@@ -18477,7 +18536,7 @@ function moveRemove(id) {
         ),
         false
       );
-    if (dayPlanEvents(d, gid).length)
+    if (dayPlanEvents(d, gid).length && !(m.slotHour && d === m.toDate))
       return (
         warn(gname(gid) + ': υπάρχει τροποποίηση του προγράμματος την ' + dayLabel(d) + '. Διαγράψτε την πρώτα.'),
         false
