@@ -3821,7 +3821,9 @@ body.layer-open {
   font-size: 12px;
   color: #21734b;
 }
-.dp-actions {
+/* 2.4 (τελική): και τα κουμπιά της μεταφοράς μαθήματος (χωριστή κλάση, ώστε το .dp-actions να μένει μόνο του πίνακα) */
+.dp-actions,
+.mv-actions {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 6px;
@@ -4516,10 +4518,7 @@ details.setup-done[open] > summary {
     font-size: 13.5px;
   }
 }
-/* 2.5: Ενιαίο τμήμα (Πρόγραμμα ημέρας → «Ενιαίο τμήμα»)· «Τι θέλετε να καταγράψετε;» */
-.mg-edit .grid {
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-}
+/* 2.5: Ενιαίο τμήμα (Πρόγραμμα ημέρας → «Πώς γίνεται το μάθημα;»)· «Τι θέλετε να καταγράψετε;» */
 .mg-groups {
   margin: 10px 0;
 }
@@ -4563,19 +4562,6 @@ details.setup-done[open] > summary {
   min-width: 92px;
   padding: 5px 4px;
   font-size: 12.5px;
-}
-.mg-list small {
-  display: block;
-}
-.mg-list .mg-miss {
-  color: #9a5b12;
-}
-.mg-list tr.editing td {
-  background: #f3f8f5;
-}
-.mg-list td.row {
-  gap: 6px;
-  flex-wrap: wrap;
 }
 .dp-line.dp-merge .dp-tag {
   white-space: normal;
@@ -4624,7 +4610,7 @@ details.setup-done[open] > summary {
   margin-top: 8px;
 }
 .mg-day .grid {
-  grid-template-columns: minmax(0, 260px);
+  grid-template-columns: repeat(auto-fill, minmax(170px, 240px));
 }
 .mg-day .mg-grid {
   min-width: 700px;
@@ -4640,6 +4626,32 @@ details.setup-done[open] > summary {
   .dp-mode-opts {
     flex-direction: column;
   }
+}
+/* 2.4 (τελική): μεταφορά μαθήματος σε άλλη ημέρα, ενιαίο τμήμα πολλών ημερών (γραμμή της ημέρας) */
+.mv-box {
+  margin-top: 14px;
+  border: 1px solid #d6e3ec;
+  border-radius: 9px;
+  background: #fff;
+  padding: 8px 10px;
+}
+.mv-box > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #174e48;
+}
+.mv-box[open] > summary {
+  margin-bottom: 8px;
+}
+.mv-box .grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+.mv-box h4 {
+  margin: 12px 0 6px;
+}
+.mg-grid tr.current th {
+  background: #e5f2eb;
+  color: #174e48;
 }
 </style><meta name="robots" content="noindex,nofollow"></head><body>
 <header><a class="brand" href="#" onclick="go('dashboard');return false" aria-label="Διδακτικός χρόνος"><img class="brand-mark" src="data:image/png;base64,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" alt=""><div><strong>Διαχείριση Διδακτικών Ωρών</strong><small id="headSchool">Σχολικό έτος 2026–2027</small></div></a><div class="header-actions"><span class="private-badge">● Τοπική λειτουργία</span><button id="cloudStatus" class="drive-status hidden" onclick="cloudButton()">☁ Σύνδεση</button><div class="header-extra" id="headerExtra"><button id="installBtn" class="hidden" onclick="installApp()">Εγκατάσταση</button><span id="syncStatus" role="status" aria-live="polite">Τοπική αποθήκευση</span><span id="backupStatus" class="backup-status"></span><button class="json-btn" onclick="backup()">Αντίγραφο JSON</button></div><button id="moreBtn" class="more-btn" type="button" aria-expanded="false" aria-controls="headerExtra" aria-label="Περισσότερα" onclick="toggleHeaderMore()">⋯</button></div></header>
@@ -4710,8 +4722,8 @@ const REASON_GROUPS = [
       'Απουσία εκπαιδευτικού',
       'Κενό Εκπαιδευτικού',
       'Επιμόρφωση Εκπαιδευτικών',
-      'Συνοδεία μαθητών (εκδρομή / επίσκεψη / αγώνες)',
-      'Υπηρεσιακή υποχρέωση εκπαιδευτικού'
+      'Απουσία εκπαιδευτικού λόγω συνοδείας μαθητών (εκδρομή / επίσκεψη / αγώνες)',
+      'Απουσία εκπαιδευτικού λόγω υπηρεσιακής υποχρέωσης'
     ]
   },
   {
@@ -6152,7 +6164,6 @@ function render() {
     ['makeup', 'Αναπληρώσεις & κοινά διαγωνίσματα'],
     ['participation', 'Συμμετοχές μαθητών'],
     ['dayplan', 'Πρόγραμμα ημέρας'],
-    ['merge', 'Ενιαίο τμήμα'],
     ['stats', 'Στατιστικά'],
     ['dashboard', 'Επισκόπηση'],
     ['backup', 'Δεδομένα'],
@@ -6175,7 +6186,6 @@ function render() {
     joints: jointsView,
     schedule: unifiedScheduleView,
     dayplan: dayAdminView,
-    merge: mergeView,
     log: logView,
     makeup: makeupView,
     participation: partView,
@@ -7377,6 +7387,7 @@ function normalizeState() {
   partSplit(data);
   tlSplit(data);
   mergeSplit(data);
+  moveSplit(data);
   data.calendar = data.calendar || { start: '', end: '', exclusions: [] };
   data.reasons = normalizeReasons(data.reasons);
   data.calendar.exclusions = normalizeExclusions(data.calendar.exclusions || []);
@@ -7616,7 +7627,7 @@ function logProgramSlots(date) {
     for (const [key, s] of slots) if (groups.has(s.groupId)) slots.delete(key);
     for (const s of e.dayProgramSnapshots) slots.set(s.groupId + '|' + s.hour, withoutMove(s));
   }
-  return [...slots.values()];
+  return moveSlotsOn(date, [...slots.values()], p.id);
 }
 function matchingSlots(sel) {
   if (logSchedule === 'recorded' && useExactRecordedSelection(sel))
@@ -9027,7 +9038,7 @@ function statisticalSlots(date) {
       for (const s of e.dayProgramSnapshots) slots.set(s.groupId + '|' + s.hour, s);
     }
   for (const e of events) for (const s of e.slotSnapshots || []) if (!s.manual) slots.set(s.groupId + '|' + s.hour, s);
-  return [...slots.values()];
+  return moveSlotsOn(date, [...slots.values()]);
 }
 function hourDescription(s) {
   return s.manual ? 'Εκτός ωρολογίου · 1 ώρα' : s.hour + 'η' + movedLabel(s);
@@ -9135,7 +9146,7 @@ function validateEventSchema(d) {
     }
   }
   for (const e of [...d.events, ...(d.timeLosses || [])]) {
-    if (isParticipation(e) || isDayMerge(e)) continue;
+    if (isParticipation(e) || isDayMerge(e) || isDayMove(e)) continue;
     validateManualRangeTotal(e);
     const manualLimit = e.manualRangeTotal ? 7 * e.manualRangeDays.length : 7;
     if (e.updatedAt !== undefined && (typeof e.updatedAt !== 'string' || Number.isNaN(Date.parse(e.updatedAt))))
@@ -9244,11 +9255,14 @@ function storedText(state, pretty) {
         typeof v === 'object' &&
         !Array.isArray(v) &&
         Array.isArray(v.events) &&
-        (Array.isArray(v.participations) || Array.isArray(v.timeLosses) || Array.isArray(v.dayMerges))
+        (Array.isArray(v.participations) ||
+          Array.isArray(v.timeLosses) ||
+          Array.isArray(v.dayMerges) ||
+          Array.isArray(v.dayMoves))
       ) {
-        // 2.5: και τα ενιαία τμήματα
-        const { participations = [], timeLosses = [], dayMerges = [], ...rest } = v,
-          extra = [...participations, ...timeLosses, ...dayMerges];
+        // 2.5: και τα ενιαία τμήματα· 2.4 (τελική): και οι μεταφορές μαθημάτων
+        const { participations = [], timeLosses = [], dayMerges = [], dayMoves = [], ...rest } = v,
+          extra = [...participations, ...timeLosses, ...dayMerges, ...dayMoves];
         return extra.length ? { ...rest, events: [...v.events, ...extra] } : rest;
       }
       if (
@@ -9726,6 +9740,7 @@ function validateImport(d, archived = false) {
   partValidateAll(d);
   tlValidateAll(d);
   mergeValidateAll(d);
+  moveValidateAll(d);
   if (
     d.subjects.some(
       s =>
@@ -9856,7 +9871,7 @@ function validateImport(d, archived = false) {
     );
   }
   for (const e of [...d.events, ...(d.timeLosses || [])]) {
-    if (isParticipation(e) || isDayMerge(e)) continue;
+    if (isParticipation(e) || isDayMerge(e) || isDayMove(e)) continue;
     validateManualRangeTotal(e);
     if (
       e.calendarReviewedAt !== undefined &&
@@ -11037,8 +11052,8 @@ const TEACHER_REASONS = [
   'Άδεια εκπαιδευτικού',
   'Απουσία εκπαιδευτικού',
   'Κενό Εκπαιδευτικού',
-  'Συνοδεία μαθητών (εκδρομή / επίσκεψη / αγώνες)',
-  'Υπηρεσιακή υποχρέωση εκπαιδευτικού'
+  'Απουσία εκπαιδευτικού λόγω συνοδείας μαθητών (εκδρομή / επίσκεψη / αγώνες)',
+  'Απουσία εκπαιδευτικού λόγω υπηρεσιακής υποχρέωσης'
 ];
 function statReasonPreset(kind) {
   const all = statReasonChoices();
@@ -11675,8 +11690,8 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') setMenuOpen(false);
 });
 const DETAIL_HINTS = {
-  'Συνοδεία μαθητών (εκδρομή / επίσκεψη / αγώνες)': 'π.χ. Εκδρομή της Γ στη Θεσσαλονίκη',
-  'Υπηρεσιακή υποχρέωση εκπαιδευτικού': 'π.χ. Εξεταστής, μέλος επιτροπής, σύσκεψη στη Διεύθυνση',
+  'Απουσία εκπαιδευτικού λόγω συνοδείας μαθητών (εκδρομή / επίσκεψη / αγώνες)': 'π.χ. Εκδρομή της Γ στη Θεσσαλονίκη',
+  'Απουσία εκπαιδευτικού λόγω υπηρεσιακής υποχρέωσης': 'π.χ. Εξεταστής, μέλος επιτροπής, σύσκεψη στη Διεύθυνση',
   'Φεστιβάλ Μαθητικής Έκφρασης και Δημιουργίας': 'π.χ. Θεατρική παράσταση του σχολείου',
   'Ενημέρωση για Σχολικό Επαγγελματικό Προσανατολισμό (ΣΕΠ)': 'π.χ. Ενημέρωση για τις σπουδές μετά το Λύκειο',
   'Άσκηση ετοιμότητας (σεισμός / πυρκαγιά)': 'π.χ. Άσκηση σεισμού με εκκένωση του κτιρίου',
@@ -14343,7 +14358,7 @@ function helpView() {
     `<div class="help-intro"><p>Η εφαρμογή καταγράφει τις <strong>διδακτικές ώρες που δεν πραγματοποιήθηκαν</strong> (και για ποιον λόγο), τις <strong>αναπληρώσεις</strong>, τα <strong>διαγωνίσματα</strong> και τις <strong>συμμετοχές μαθητών</strong> σε διαγωνισμούς, πρόβες και αγώνες. Από αυτά βγαίνουν τα στατιστικά του σχολείου: πόσες ώρες χάθηκαν ανά τμήμα και μάθημα, για ποιους λόγους και πόσες αναπληρώθηκαν.</p><p>Καταγράφετε μόνο ό,τι <strong>δεν</strong> έγινε όπως στο πρόγραμμα. Όσες ώρες δεν καταγράφονται θεωρείται ότι πραγματοποιήθηκαν κανονικά. Οι καταγραφές όλων συγκεντρώνονται σε ένα κοινό αρχείο.</p><p><button type="button" class="help-pdf" onclick="openGuide()">📖 Αναλυτικός οδηγός με εικόνες</button></p></div>
 ${step(
   '1. Ώρα που δεν έγινε',
-  `<p><strong>Καταγραφή ωρών</strong> → «Ώρες που δεν έγιναν» → ημερομηνία → αιτία → τμήματα → μαθήματα → ώρες → <strong>Αποθήκευση καταγραφής</strong>.</p><p>Στο βήμα 3, τα κουμπιά <strong>Πρόσφατα</strong> (π.χ. «Β1 · Μαθηματικά») ξαναδιαλέγουν με ένα πάτημα τα τμήματα και τα μαθήματα που καταγράψατε πρόσφατα από αυτή τη συσκευή· μετά ελέγξτε τις ώρες.</p><p>Για μία ημέρα, με «Συγκεκριμένα μαθήματα ανά τμήμα», δίπλα σε κάθε μάθημα φαίνονται οι ώρες του και τις επιλέγετε εκεί.</p><p><strong>Τι καταγράφουν οι χρήστες:</strong> τα μαθήματα που δεν έγιναν σε κάποια ώρα (π.χ. Συνεδρίαση Συλλόγου Διδασκόντων, σχολική εορτή, εκδρομή), μία ημέρα κάθε φορά, με μία αιτία. Ό,τι αφορά όλη την ημέρα ή τον εκπαιδευτικό (άδεια, απουσία, κενό ή επιμόρφωση εκπαιδευτικού, συνοδεία μαθητών, υπηρεσιακή υποχρέωση εκπαιδευτικού, απεργία / στάση εργασίας, κατάληψη, βουλευτικές / αυτοδιοικητικές εκλογές, πολιούχος / τοπική αργία, φυσικές καταστροφές, δυσμενείς καιρικές συνθήκες), καθώς και τα διαστήματα ημερών, τα καταχωρίζει ο διαχειριστής.</p><p><strong>Από πριν:</strong> ο διαχειριστής δηλώνει άδεια, απουσία, κενό ή επιμόρφωση εκπαιδευτικού, συνοδεία μαθητών, υπηρεσιακή υποχρέωση εκπαιδευτικού, απεργία / στάση εργασίας, εκδρομή, εκπαιδευτική ή διδακτική επίσκεψη και Φεστιβάλ Μαθητικής Έκφρασης και Δημιουργίας και για επόμενες ημέρες. Οι άλλες αιτίες καταγράφονται την ημέρα που έγιναν ή αργότερα.</p><p><strong>Άλλαξε το πρόγραμμα της ημέρας;</strong> (π.χ. λείπει εκπαιδευτικός και τα μαθήματα μετακινήθηκαν στις κενές ώρες) Το πρόγραμμα της ημέρας το τροποποιεί μόνο ο διαχειριστής· γίνεται και από πριν. Στην Καταγραφή ωρών, κάτω από τα τμήματα, μια γραμμή για κάθε τμήμα λέει αν άλλαξαν οι ώρες του («τροποποιημένο», με τον λόγο) ή όχι («όπως το ωρολόγιο»). Οι ώρες δίπλα σε κάθε μάθημα είναι ήδη οι ώρες της ημέρας. Αν το πρόγραμμα άλλαξε αλλά δεν φαίνεται, ενημερώστε τον διαχειριστή· η καταγραφή γίνεται κανονικά.</p><p><strong>Ενιαίο τμήμα:</strong> όταν μέρος της τάξης λείπει (π.χ. πολυήμερη εκδρομή), όσοι μένουν κάνουν μάθημα σε ένα τμήμα (π.χ. «Γ» αντί για Γ1, Γ2 και τις ομάδες). Το ορίζει ο διαχειριστής (Πρόγραμμα ημέρας: για μία ημέρα με εκδρομή, επίσκεψη, αθλητική δράση ή φεστιβάλ, ή στην καρτέλα «Ενιαίο τμήμα» για περισσότερες ημέρες) και στην Καταγραφή ωρών φαίνεται ως «Ενιαίο τμήμα «Γ»» με το μάθημα κάθε ώρας. Η δράση καταγράφεται για όλη την τάξη· για τις ώρες του ενιαίου τμήματος δεν γράφεται τίποτα.</p><p><strong>Σύλλογος, εορτή, εκδρομή κ.λπ.:</strong> καταγράψτε την ώρα που έγιναν. Η απώλεια μένει στο μάθημα που καταγράψατε: αν ο διαχειριστής μετακινήσει αργότερα το μάθημα (π.χ. από την 3η στην 1η), η απώλεια πηγαίνει μαζί του.</p><p class="muted">Πριν την αποθήκευση, η προεπισκόπηση δείχνει τι θα γραφτεί. Αν η ώρα έχει ήδη καταγραφεί από άλλον, το βλέπετε εκεί και μπορείτε να την προσθέσετε ως επιπλέον αιτία.</p>`
+  `<p><strong>Καταγραφή ωρών</strong> → «Ώρες που δεν έγιναν» → ημερομηνία → αιτία → τμήματα → μαθήματα → ώρες → <strong>Αποθήκευση καταγραφής</strong>.</p><p>Στο βήμα 3, τα κουμπιά <strong>Πρόσφατα</strong> (π.χ. «Β1 · Μαθηματικά») ξαναδιαλέγουν με ένα πάτημα τα τμήματα και τα μαθήματα που καταγράψατε πρόσφατα από αυτή τη συσκευή· μετά ελέγξτε τις ώρες.</p><p>Για μία ημέρα, με «Συγκεκριμένα μαθήματα ανά τμήμα», δίπλα σε κάθε μάθημα φαίνονται οι ώρες του και τις επιλέγετε εκεί.</p><p><strong>Τι καταγράφουν οι χρήστες:</strong> τα μαθήματα που δεν έγιναν σε κάποια ώρα (π.χ. Συνεδρίαση Συλλόγου Διδασκόντων, σχολική εορτή, εκδρομή), μία ημέρα κάθε φορά, με μία αιτία. Ό,τι αφορά όλη την ημέρα ή τον εκπαιδευτικό (άδεια, απουσία, κενό ή επιμόρφωση εκπαιδευτικού, συνοδεία μαθητών, υπηρεσιακή υποχρέωση εκπαιδευτικού, απεργία / στάση εργασίας, κατάληψη, βουλευτικές / αυτοδιοικητικές εκλογές, πολιούχος / τοπική αργία, φυσικές καταστροφές, δυσμενείς καιρικές συνθήκες), καθώς και τα διαστήματα ημερών, τα καταχωρίζει ο διαχειριστής.</p><p><strong>Από πριν:</strong> ο διαχειριστής δηλώνει άδεια, απουσία, κενό ή επιμόρφωση εκπαιδευτικού, συνοδεία μαθητών, υπηρεσιακή υποχρέωση εκπαιδευτικού, απεργία / στάση εργασίας, εκδρομή, εκπαιδευτική ή διδακτική επίσκεψη και Φεστιβάλ Μαθητικής Έκφρασης και Δημιουργίας και για επόμενες ημέρες. Οι άλλες αιτίες καταγράφονται την ημέρα που έγιναν ή αργότερα.</p><p><strong>Άλλαξε το πρόγραμμα της ημέρας;</strong> (π.χ. λείπει εκπαιδευτικός και τα μαθήματα μετακινήθηκαν στις κενές ώρες) Το πρόγραμμα της ημέρας το τροποποιεί μόνο ο διαχειριστής· γίνεται και από πριν. Ένα μάθημα μπορεί να γίνει και άλλη ημέρα της ίδιας εβδομάδας (π.χ. τα Θρησκευτικά της Παρασκευής την Τετάρτη 1η): φαίνεται και στις δύο ημέρες, και καταγράφεται την ημέρα που γίνεται. Στην Καταγραφή ωρών, κάτω από τα τμήματα, μια γραμμή για κάθε τμήμα λέει αν άλλαξαν οι ώρες του («τροποποιημένο», με τον λόγο) ή όχι («όπως το ωρολόγιο»). Οι ώρες δίπλα σε κάθε μάθημα είναι ήδη οι ώρες της ημέρας. Αν το πρόγραμμα άλλαξε αλλά δεν φαίνεται, ενημερώστε τον διαχειριστή· η καταγραφή γίνεται κανονικά.</p><p><strong>Ενιαίο τμήμα:</strong> όταν μέρος της τάξης λείπει (π.χ. πολυήμερη εκδρομή), όσοι μένουν κάνουν μάθημα σε ένα τμήμα (π.χ. «Γ» αντί για Γ1, Γ2 και τις ομάδες). Το ορίζει ο διαχειριστής στο Πρόγραμμα ημέρας (για μία ή περισσότερες ημέρες με εκδρομή, επίσκεψη, αθλητική δράση ή φεστιβάλ) και στην Καταγραφή ωρών φαίνεται ως «Ενιαίο τμήμα «Γ»» με το μάθημα κάθε ώρας. Η δράση καταγράφεται για όλη την τάξη· για τις ώρες του ενιαίου τμήματος δεν γράφεται τίποτα.</p><p><strong>Σύλλογος, εορτή, εκδρομή κ.λπ.:</strong> καταγράψτε την ώρα που έγιναν. Η απώλεια μένει στο μάθημα που καταγράψατε: αν ο διαχειριστής μετακινήσει αργότερα το μάθημα (π.χ. από την 3η στην 1η), η απώλεια πηγαίνει μαζί του.</p><p class="muted">Πριν την αποθήκευση, η προεπισκόπηση δείχνει τι θα γραφτεί. Αν η ώρα έχει ήδη καταγραφεί από άλλον, το βλέπετε εκεί και μπορείτε να την προσθέσετε ως επιπλέον αιτία.</p>`
 )}
 ${step(
   '2. Διαγώνισμα στη δική του ώρα',
@@ -14642,6 +14657,16 @@ function withoutMove(s) {
   return rest;
 }
 function movedLabel(s) {
+  // 2.4 (τελική): μάθημα που μεταφέρθηκε από άλλη ημέρα της εβδομάδας
+  if (s?.movedFrom && validISODate(s.movedFrom))
+    return (
+      ' (από ' +
+      DAYS[weekday(s.movedFrom)] +
+      ' ' +
+      shortDate(s.movedFrom) +
+      ')' +
+      (s.movedHour ? ' (έγινε ' + s.movedHour + 'η)' : '')
+    );
   return s?.movedHour ? ' (έγινε ' + s.movedHour + 'η)' : '';
 }
 // στην προεπισκόπηση: ποιες ώρες ακολουθούν το πρόγραμμα της ημέρας· και για παλιές καταγραφές με «έγινε άλλη ώρα»,
@@ -14742,8 +14767,8 @@ const DAY_PLAN_NOTE = 'Τροποποίηση προγράμματος ημέρ�
     'Απεργία / Στάση εργασίας',
     'Επιμόρφωση Εκπαιδευτικών',
     // 2.4 (τελική): ο εκπαιδευτικός λείπει για υπηρεσιακό λόγο (όχι άδεια)
-    'Συνοδεία μαθητών (εκδρομή / επίσκεψη / αγώνες)',
-    'Υπηρεσιακή υποχρέωση εκπαιδευτικού'
+    'Απουσία εκπαιδευτικού λόγω συνοδείας μαθητών (εκδρομή / επίσκεψη / αγώνες)',
+    'Απουσία εκπαιδευτικού λόγω υπηρεσιακής υποχρέωσης'
   ],
   // 2.5: εκδρομές και επισκέψεις: τις δηλώνει από πριν ο διαχειριστής (το μάθημα κρατά τη θέση του, χαμένο)
   PLANNED_REASONS = [
@@ -14860,6 +14885,8 @@ function dayBaseSlots(date, gid, events = data.events) {
       (e.programGroupIds || e.groupIds).includes(gid)
     )
       slots = e.dayProgramSnapshots.filter(s => s.groupId === gid).map(withoutMove);
+  // 2.4 (τελική): μαθήματα που μεταφέρθηκαν από / σε άλλη ημέρα της εβδομάδας
+  slots = moveSlotsOn(date, slots, p.id).filter(s => s.groupId === gid);
   return [...new Map(slots.map(s => [s.hour, s])).values()].sort((a, b) => a.hour - b.hour);
 }
 // κατάσταση κάθε μαθήματος της ημέρας: καταγραφές, μετακίνηση, πού βρίσκεται σήμερα
@@ -15308,16 +15335,22 @@ function dayPlanBoxHTML(ctx = 'log') {
 }
 // 2.0.2: «τροποποιημένο» μόνο για το τμήμα (ή την ομάδα) με δικές του μετακινήσεις, όχι για όλη την τάξη
 function dayViewLineHTML(st, said = new Set()) {
-  const plans = st.plans,
-    plan = plans.length > 0,
+  const moves = moveNotes(st.date, st.gid),
+    plans = st.plans,
+    plan = plans.length > 0 || moves.length > 0,
     reason = dayPlanReasonText(plans),
     // πρόβλημα στο πρόγραμμα της τάξης: στο πρώτο τμήμα που φαίνεται
     issues = dayPlanIssues(st.date, st.gid).filter(t => !said.has(t)),
-    note = plan
-      ? reason
-        ? 'Λόγος: ' + reason + '.'
-        : dayPlanWho(plans) // παλιές τροποποιήσεις χρηστών (1.7.7–1.8), χωρίς λόγο
-      : '',
+    note = [
+      ...moves,
+      plans.length
+        ? reason
+          ? 'Λόγος: ' + reason + '.'
+          : dayPlanWho(plans) // παλιές τροποποιήσεις χρηστών (1.7.7–1.8), χωρίς λόγο
+        : ''
+    ]
+      .filter(Boolean)
+      .join(' · '),
     admin = !isUser()
       ? `<button type="button" onclick="dayAdminOpenFrom('${st.date}','${st.gid}')">${plan ? 'Αλλαγή' : 'Τροποποίηση'} στο Πρόγραμμα ημέρας</button>`
       : '';
@@ -15680,7 +15713,8 @@ function dayAdminBoxHTML() {
     const gp = dayGaps(us.sts.get(g));
     if (gp.length) notes.push((many ? gname(g) + ': ' : '') + dayGapsText(gp));
   }
-  return `<div class="day-plan admin">${title}${choice}${notes.map(n => `<p class="dp-note">${esc(n)}</p>`).join('')}${dayPlanEditorHTML()}</div>`;
+  for (const g of gids) for (const t of moveNotes(apDate, g)) notes.push((many ? gname(g) + ': ' : '') + t);
+  return `<div class="day-plan admin">${title}${choice}${notes.map(n => `<p class="dp-note">${esc(n)}</p>`).join('')}${dayPlanEditorHTML()}${moveFormHTML(apDate, apGrade)}</div>`;
 }
 // δεν χάνονται σιωπηλά αλλαγές του πίνακα που δεν αποθηκεύτηκαν
 function apLeaveOk() {
@@ -15710,7 +15744,7 @@ function dayWeekStripHTML() {
           ? 'off'
           : mergeOnDay(d, apGrade)
             ? 'merge'
-            : sts.some(st => st.plans.length)
+            : sts.some(st => st.plans.length) || moveDayHas(d, unit)
               ? 'plan'
               : sts.some(st => dayGaps(st).length)
                 ? 'gaps'
@@ -15818,7 +15852,7 @@ function dayAdminListsHTML() {
           )}</span></div><div class="row"><button type="button" onclick="dayAdminOpen('${u.date}','${u.gaps[0].gid}')">Τροποποίηση</button></div></div>`
       )
       .join('');
-  return `<h3>Τροποποιήσεις προγράμματος</h3>${planRows ? `<div class="dp-list">${planRows}</div>` : '<p class="muted">Καμία τροποποίηση στο διάστημα.</p>'}<h3>Κενά χωρίς τροποποίηση</h3><p class="muted">Ημέρες με άδεια ή απουσία εκπαιδευτικού για τις οποίες δεν έχει τροποποιηθεί το πρόγραμμα της ημέρας.</p>${gapRows ? `<div class="dp-list">${gapRows}</div>` : '<p class="muted">Κανένα στο διάστημα.</p>'}`;
+  return `<h3>Τροποποιήσεις προγράμματος</h3>${planRows ? `<div class="dp-list">${planRows}</div>` : '<p class="muted">Καμία τροποποίηση στο διάστημα.</p>'}${mergeDayListHTML(from, to)}${moveDayListHTML(from, to)}<h3>Κενά χωρίς τροποποίηση</h3><p class="muted">Ημέρες με άδεια ή απουσία εκπαιδευτικού για τις οποίες δεν έχει τροποποιηθεί το πρόγραμμα της ημέρας.</p>${gapRows ? `<div class="dp-list">${gapRows}</div>` : '<p class="muted">Κανένα στο διάστημα.</p>'}`;
 }
 // διαγραφή της τροποποίησης (όλων των τμημάτων που τροποποιήθηκαν μαζί)
 function dayAdminDelete(date, gid) {
@@ -15868,7 +15902,7 @@ function dayAdminView() {
   if (!apPrintFrom) apPrintFrom = apDate;
   if (!apPrintTo) apPrintTo = apPrintFrom;
   $('view').innerHTML =
-    `${pageTabsHTML()}<section class="panel day-admin"><h2>Πρόγραμμα ημέρας</h2><p class="muted">Τροποποίηση του προγράμματος για μία ημέρα (π.χ. όταν λείπει εκπαιδευτικός και τα μαθήματα μπαίνουν στις κενές ώρες), και από πριν. Το ωρολόγιο δεν αλλάζει. Τη βλέπουν όλοι στην Καταγραφή ωρών (και στην αναπλήρωση). Τροποποιείται όλη η τάξη μαζί (τμήματα και ομάδες)· τμήματα με κοινούς μαθητές (από τους συνδυασμούς μαθητών) δεν έχουν μάθημα την ίδια ώρα. Ο λόγος βγαίνει από τις καταγραφές της ημέρας (άδεια, απουσία, απεργία κ.λπ.)· αν δεν υπάρχουν, τον επιλέγετε. Απώλειες που έχουν ήδη καταγραφεί (π.χ. Σύλλογος) μένουν στο μάθημα και μετακινούνται μαζί του.</p><h3>Τροποποίηση</h3><div class="grid"><label class="field">Ημερομηνία<input type="date" id="apDateIn" value="${esc(apDate)}" onchange="apSet('date',this.value)"></label><label class="field">Τάξη<select id="apGradeIn" onchange="apSet('grade',this.value)"><option value="">— Επιλέξτε τάξη —</option>${dayGrades()
+    `${pageTabsHTML()}<section class="panel day-admin"><h2>Πρόγραμμα ημέρας</h2><p class="muted">Τροποποίηση του προγράμματος για μία ημέρα (π.χ. όταν λείπει εκπαιδευτικός και τα μαθήματα μπαίνουν στις κενές ώρες), και από πριν. Το ωρολόγιο δεν αλλάζει. Τη βλέπουν όλοι στην Καταγραφή ωρών (και στην αναπλήρωση). Τροποποιείται όλη η τάξη μαζί (τμήματα και ομάδες)· τμήματα με κοινούς μαθητές (από τους συνδυασμούς μαθητών) δεν έχουν μάθημα την ίδια ώρα. Ο λόγος βγαίνει από τις καταγραφές της ημέρας (άδεια, απουσία, απεργία κ.λπ.)· αν δεν υπάρχουν, τον επιλέγετε. Απώλειες που έχουν ήδη καταγραφεί (π.χ. Σύλλογος) μένουν στο μάθημα και μετακινούνται μαζί του. Με εκδρομή, επίσκεψη, αθλητική δράση ή φεστιβάλ της τάξης επιλέγετε και «Ενιαίο τμήμα». Ένα μάθημα γίνεται και σε άλλη ημέρα της ίδιας εβδομάδας με τη «Μεταφορά μαθήματος» κάτω από τον πίνακα.</p><h3>Τροποποίηση</h3><div class="grid"><label class="field">Ημερομηνία<input type="date" id="apDateIn" value="${esc(apDate)}" onchange="apSet('date',this.value)"></label><label class="field">Τάξη<select id="apGradeIn" onchange="apSet('grade',this.value)"><option value="">— Επιλέξτε τάξη —</option>${dayGrades()
       .map(g => `<option value="${esc(g)}" ${g === apGrade ? 'selected' : ''}>${esc(g)}</option>`)
       .join(
         ''
@@ -16106,7 +16140,7 @@ function dayPrintCellHTML(g, h, sts) {
     seen.add(key);
     const label = gid === me && !j ? '' : `<span class="section">${esc(j ? j.name : gname(gid))}</span>`;
     out.push(
-      `<div class="lesson">${label}<strong>${esc(j ? jointCourseName(j) : L.name)}</strong>${L.act !== L.hour ? `<small>(από ${L.hour}η)</small>` : ''}</div>`
+      `<div class="lesson">${label}<strong>${esc(j ? jointCourseName(j) : L.name)}</strong>${L.act !== L.hour ? `<small>(από ${L.hour}η)</small>` : ''}${L.s.movedFrom ? `<small>(από ${esc(moveShort(L.s.movedFrom))})</small>` : ''}</div>`
     );
   }
   // κανένα μάθημα για τους μαθητές του τμήματος: ένα «κενό»
@@ -16143,8 +16177,9 @@ function printDayPrograms(gids, from, to, onlyPlan = false) {
           .map(d => {
             const sts = new Map(with_.map(id => [id, dayState(d, id)])),
               plans = sheetPlans(d, g),
-              reason = plans.length ? dayPlanReasonText(plans) : '';
-            return `<tr><th>${esc(dayLabel(d))}${plans.length ? `<small class="mod">τροποποιημένο${reason ? ' · ' + esc(reason) : ''}</small>` : ''}</th>${[1, 2, 3, 4, 5, 6, 7].map(h => `<td>${dayPrintCellHTML(g, h, sts)}</td>`).join('')}</tr>`;
+              reason = plans.length ? dayPlanReasonText(plans) : '',
+              moves = with_.flatMap(id => moveNotes(d, id).map(t => (id === g.id ? '' : gname(id) + ': ') + t));
+            return `<tr><th>${esc(dayLabel(d))}${plans.length || moves.length ? `<small class="mod">τροποποιημένο${reason ? ' · ' + esc(reason) : ''}${moves.length ? ' · ' + esc(moves.join(' · ')) : ''}</small>` : ''}</th>${[1, 2, 3, 4, 5, 6, 7].map(h => `<td>${dayPrintCellHTML(g, h, sts)}</td>`).join('')}</tr>`;
           })
           .join('');
       return `<section class="dp-sheet"><h2>${esc(g.name)}</h2><table><thead><tr><th>Ημέρα</th>${DAY_TIMES.map((t, i) => `<th>${i + 1}<span class="time">${t}</span></th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></section>`;
@@ -17239,15 +17274,8 @@ const NAV_DAILY = ['dashboard', 'log', 'dayplan', 'stats'],
   NAV_SETUP = ['school', 'groups', 'subjects', 'schedule'],
   NAV_OTHER = ['backup', 'accounts', 'help'],
   // σελίδες που ανήκουν σε άλλη θέση του μενού
-  NAV_ALIAS = {
-    calendar: 'school',
-    joints: 'subjects',
-    periods: 'schedule',
-    makeup: 'log',
-    participation: 'log',
-    merge: 'dayplan'
-  },
-  // καρτέλες μέσα στη σελίδα (βήματα 1 και 3 των ρυθμίσεων, Πρόγραμμα ημέρας)
+  NAV_ALIAS = { calendar: 'school', joints: 'subjects', periods: 'schedule', makeup: 'log', participation: 'log' },
+  // καρτέλες μέσα στη σελίδα (βήματα 1 και 3 των ρυθμίσεων)
   PAGE_TABS = {
     school: [
       ['school', 'Σχολείο & σχολικό έτος'],
@@ -17256,10 +17284,6 @@ const NAV_DAILY = ['dashboard', 'log', 'dayplan', 'stats'],
     subjects: [
       ['subjects', 'Μαθήματα ανά τμήμα'],
       ['joints', 'Συνδιδασκαλίες']
-    ],
-    dayplan: [
-      ['dayplan', 'Πρόγραμμα ημέρας'],
-      ['merge', 'Ενιαίο τμήμα']
     ]
   },
   // τα είδη της Καταγραφής ωρών (το «time» μόνο ο διαχειριστής)
@@ -17506,7 +17530,7 @@ function logPickWrap(fn) {
     return out;
   };
 }
-/* ---------- 2.5: Ενιαίο τμήμα (Πρόγραμμα ημέρας → «Ενιαίο τμήμα», μόνο ο διαχειριστής) ----------
+/* ---------- 2.4 (τελική): Ενιαίο τμήμα (Πρόγραμμα ημέρας → «Πώς γίνεται το μάθημα;», μόνο ο διαχειριστής) ----------
    Όταν λείπει μέρος της τάξης (π.χ. πολυήμερη εκδρομή), οι μαθητές που μένουν κάνουν μάθημα σε ένα τμήμα (π.χ. «Γ»
    αντί για Γ1, Γ2 και τις ομάδες). Για ένα διάστημα ορίζεται σε κάθε ημέρα και ώρα το μάθημα, οποιοδήποτε της τάξης
    (Γενικής Παιδείας, ΓΠ βάσει προσανατολισμού, Προσανατολισμού), ή κανένα. Είναι για την οργάνωση, την εκτύπωση και
@@ -17712,43 +17736,19 @@ function mergeRangeLinesHTML(days, gids) {
     )
     .join('');
 }
-/* ---------- σελίδα «Ενιαίο τμήμα» ---------- */
-function mergeView() {
-  if (mgDraft?.day) mgDraft = null; // η φόρμα του «Προγράμματος ημέρας» δεν μεταφέρεται εδώ
-  panel(
-    'Ενιαίο τμήμα',
-    'Όταν λείπει μέρος της τάξης (π.χ. εκδρομή), οι μαθητές που μένουν κάνουν μάθημα σε ένα τμήμα. Ορίστε τις ημέρες και σε κάθε ώρα το μάθημα, Γενικής Παιδείας ή Προσανατολισμού. Είναι για την οργάνωση και την εκτύπωση· τα στατιστικά δεν αλλάζουν: οι ώρες της τάξης μετρούν με την καταγραφή της εκδρομής.',
-    `<div id="mgBox">${mergeEditorHTML()}</div><div id="mgListBox">${mergeListHTML()}</div>`
-  );
-}
+/* ---------- φόρμα στο Πρόγραμμα ημέρας ---------- */
 function mergeRefresh() {
-  if ($('mgBox')) $('mgBox').innerHTML = mergeEditorHTML();
-  if ($('mgListBox')) $('mgListBox').innerHTML = mergeListHTML();
-  if (page === 'dayplan' && $('apBox')) $('apBox').innerHTML = dayAdminBoxHTML();
+  if (page !== 'dayplan') return;
+  if ($('apBox')) $('apBox').innerHTML = dayAdminBoxHTML();
 }
-function mergeEditorHTML() {
-  const m = mgDraft;
-  if (!m) return `<div class="row"><button class="primary" onclick="mgNew()">+ Νέο ενιαίο τμήμα</button></div>`;
-  const grades = GRADES.filter(g => mergeGradeGroups(g).length),
-    groups = m.grade ? mergeGradeGroups(m.grade) : [],
-    days = mergeDays(m),
-    issue = mergeIssue(m, days);
-  return `<section class="log-step mg-edit"><h3>${m.id ? 'Τροποποίηση ενιαίου τμήματος' : 'Νέο ενιαίο τμήμα'}</h3>
- <div class="grid"><label class="field">Τάξη<select id="mgGrade" onchange="mgSet('grade',this.value)"><option value="">— Επιλέξτε τάξη —</option>${grades.map(g => `<option value="${g}" ${g === m.grade ? 'selected' : ''}>${g}</option>`).join('')}</select></label><label class="field">Από<input type="date" id="mgFrom" value="${esc(m.from)}" min="${esc(data.calendar.start)}" max="${esc(data.calendar.end)}" onchange="mgSet('from',this.value)"></label><label class="field">Έως και<input type="date" id="mgTo" value="${esc(m.to)}" min="${esc(m.from || data.calendar.start)}" max="${esc(data.calendar.end)}" onchange="mgSet('to',this.value)"></label><label class="field">Όνομα<input id="mgName" maxlength="60" value="${esc(m.name)}" placeholder="π.χ. Γ" oninput="mgSet('name',this.value)"></label></div>
- ${groups.length ? `<div class="mg-groups"><span class="muted">Τμήματα και ομάδες που ενώνονται:</span><div class="checks">${groups.map(g => `<label><input type="checkbox" data-mgg="${g.id}" ${m.groupIds.includes(g.id) ? 'checked' : ''} onchange="mgSet('group',this.dataset.mgg,this.checked)"> ${esc(g.name)}</label>`).join('')}</div></div>` : ''}
- ${m.grade && days.length && days.length <= MERGE_MAX_DAYS ? mergeGridHTML(m, days) : ''}
- ${m.grade && days.length ? mergeTripNoticeHTML(m, days) : ''}
- <div class="notice${issue ? '' : ' success'}" id="mgIssue">${issue ? esc(issue) : 'Έτοιμο για αποθήκευση.'}</div>
- <div class="row log-actions"><button class="primary" onclick="mgSave()">${m.id ? 'Αποθήκευση αλλαγών' : 'Αποθήκευση'}</button><button onclick="mgCancel()">Ακύρωση</button></div></section>`;
-}
-function mergeGridHTML(m, days) {
+function mergeGridHTML(m, days, current = '') {
   const choices = mergeChoices(m.grade),
     opts = cur =>
       `<option value="">—</option>${choices.map(c => `<optgroup label="${esc(c.label)}">${c.items.map(x => `<option value="${esc(x.v)}" ${x.v === cur ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</optgroup>`).join('')}`;
   return `<div class="scroll mg-grid-wrap"><table class="mg-grid"><thead><tr><th>Ημέρα</th>${DAY_TIMES.map((t, i) => `<th>${i + 1}η<small>${t}</small></th>`).join('')}</tr></thead><tbody>${days
     .map(
       d =>
-        `<tr><th>${esc(dayLabel(d))}</th>${[1, 2, 3, 4, 5, 6, 7].map(h => `<td><select data-mgd="${d}" data-mgh="${h}" aria-label="${esc(dayLabel(d))} ${h}η" onchange="mgSet('cell',this.dataset.mgd+'|'+this.dataset.mgh,this.value)">${opts(m.plan[d]?.[h] || '')}</select></td>`).join('')}</tr>`
+        `<tr${d === current ? ' class="current"' : ''}><th>${esc(dayLabel(d))}</th>${[1, 2, 3, 4, 5, 6, 7].map(h => `<td><select data-mgd="${d}" data-mgh="${h}" aria-label="${esc(dayLabel(d))} ${h}η" onchange="mgSet('cell',this.dataset.mgd+'|'+this.dataset.mgh,this.value)">${opts(m.plan[d]?.[h] || '')}</select></td>`).join('')}</tr>`
     )
     .join(
       ''
@@ -17771,33 +17771,17 @@ function mergeIssue(m, days = mergeDays(m)) {
   if (!m.name.trim()) return 'Γράψτε όνομα για το ενιαίο τμήμα (π.χ. ' + m.grade + ').';
   if (!m.groupIds.length) return 'Επιλέξτε τα τμήματα που ενώνονται.';
   if (!days.some(d => Object.values(m.plan[d] || {}).some(Boolean))) return 'Ορίστε τουλάχιστον ένα μάθημα.';
+  const mv = (data.dayMoves || []).find(
+    x => x.grade === m.grade && [x.date, x.toDate].some(d => d >= m.from && d <= m.to)
+  );
+  if (mv)
+    return `Υπάρχει μεταφορά μαθήματος (${gname(mv.groupIds[0])}, ${dayLabel(mv.date)} → ${dayLabel(mv.toDate)}) σε ημέρα του ενιαίου τμήματος· διαγράψτε την πρώτα.`;
   const clash = (data.dayMerges || []).find(
     x => x.id !== m.id && x.date <= m.to && x.dateTo >= m.from && x.groupIds.some(g => m.groupIds.includes(g))
   );
   if (clash)
     return `Υπάρχει ήδη ενιαίο τμήμα «${clash.name}» (${mergeRangeText(clash)}) για ${mergeGroupsText(clash.groupIds.filter(g => m.groupIds.includes(g)))}.`;
   return '';
-}
-function mgNew() {
-  mgDraft = { id: '', grade: '', name: '', from: '', to: '', groupIds: [], plan: {} };
-  if (page === 'merge') mergeRefresh();
-  else go('merge');
-}
-function mgOpen(id) {
-  const x = (data.dayMerges || []).find(m => m.id === id);
-  if (!x) return;
-  mgDraft = {
-    id: x.id,
-    grade: x.grade,
-    name: x.name,
-    from: x.date,
-    to: x.dateTo,
-    groupIds: [...x.groupIds],
-    plan: JSON.parse(JSON.stringify(x.plan))
-  };
-  if (page === 'merge') mergeRefresh();
-  else go('merge');
-  $('mgBox')?.scrollIntoView?.({ block: 'start' });
 }
 function mgCancel() {
   mgDraft = null;
@@ -17903,7 +17887,9 @@ function mgRemove(id) {
     return false;
   data.dayMerges = data.dayMerges.filter(m => m.id !== id);
   if (mgDraft?.id === id) mgDraft = null;
+  if (page === 'dayplan') apMode = '';
   render();
+  showToast('Διαγράφηκε το ενιαίο τμήμα «' + x.name + '».');
   return true;
 }
 // καταγραφή της εκδρομής για το διάστημα (Καταγραφή ωρών, έτοιμη για έλεγχο και αποθήκευση)
@@ -17933,19 +17919,33 @@ function mgLogTrip() {
   go('log');
   window.scrollTo?.(0, 0);
 }
-function mergeListHTML() {
-  const list = mergeList();
+// στις λίστες του Προγράμματος ημέρας: τα ενιαία τμήματα του διαστήματος (και όλα τα επόμενα, π.χ. εκδρομή σε δύο μήνες)
+function mergeDayListHTML(from, to) {
+  const list = mergeList().filter(m => m.dateTo >= from && (m.date <= to || m.date > schoolToday()));
   return `<h3>Ενιαία τμήματα</h3>${
     list.length
-      ? `<div class="scroll"><table class="mg-list"><thead><tr><th>Διάστημα</th><th>Ενιαίο τμήμα</th><th>Μαθήματα</th><th></th></tr></thead><tbody>${list
+      ? `<div class="dp-list">${list
           .map(m => {
             const miss = mergeMissingDays(m.grade, m.groupIds, statDays(m.date, m.dateTo)).length,
               n = Object.values(m.plan).reduce((s, x) => s + Object.keys(x).length, 0);
-            return `<tr${mgDraft?.id === m.id ? ' class="editing"' : ''}><td>${esc(mergeRangeText(m))}</td><td><strong>${esc(m.name)}</strong><small class="muted mg-of">${esc(mergeGroupsText(m.groupIds))}</small>${miss ? `<small class="mg-miss">χωρίς καταγραφή εκδρομής ή δράσης: ${miss} ${miss === 1 ? 'ημέρα' : 'ημέρες'}</small>` : ''}</td><td>${n} ${n === 1 ? 'ώρα' : 'ώρες'}</td><td class="row"><button onclick="mgOpen('${m.id}')">Τροποποίηση</button><button onclick="mgPrint('${m.id}')">🖨 Εκτύπωση</button><button class="danger" onclick="mgRemove('${m.id}')">Διαγραφή</button></td></tr>`;
+            return `<div class="dp-item"><div class="dp-item-main"><strong>${esc(mergeRangeText(m))} · Ενιαίο τμήμα «${esc(m.name)}»</strong><span>${esc(mergeGroupsText(m.groupIds))} · ${n} ${n === 1 ? 'ώρα' : 'ώρες'}</span>${miss ? `<span class="dp-bad">⚠ χωρίς καταγραφή εκδρομής ή δράσης: ${miss} ${miss === 1 ? 'ημέρα' : 'ημέρες'}</span>` : ''}</div><div class="row"><button type="button" onclick="mergeOpenDay('${m.id}')">Αλλαγή</button><button type="button" onclick="mgPrint('${m.id}')">🖨 Εκτύπωση</button><button type="button" class="danger" onclick="mgRemove('${m.id}')">Διαγραφή</button></div></div>`;
           })
-          .join('')}</tbody></table></div>`
-      : '<p class="muted">Δεν υπάρχουν ενιαία τμήματα.</p>'
+          .join('')}</div>`
+      : '<p class="muted">Κανένα στο διάστημα.</p>'
   }`;
+}
+// «Αλλαγή»: η πρώτη διδακτική ημέρα του ενιαίου τμήματος στο Πρόγραμμα ημέρας
+function mergeOpenDay(id) {
+  const m = (data.dayMerges || []).find(x => x.id === id);
+  if (!m || !apLeaveOk()) return;
+  apDate = statDays(m.date, m.dateTo)[0] || m.date;
+  apGrade = m.grade;
+  apMode = 'merge';
+  planEdit = null;
+  mgDraft = null;
+  if (page === 'dayplan') render();
+  else go('dayplan');
+  $('apBox')?.scrollIntoView?.({ block: 'start' });
 }
 // εκτύπωση όπως το πρόγραμμα ημέρας: ημέρες × ώρες (για έως μία εβδομάδα, ψηλότερες γραμμές και μεγαλύτερα γράμματα)
 const MERGE_PRINT_CSS = `
@@ -18046,10 +18046,11 @@ function mergeDayDraft(date, grade) {
 function mergeDayEditorHTML(date, grade) {
   const m = mergeDayDraft(date, grade),
     groups = mergeGradeGroups(grade),
-    issue = mergeIssue(m),
-    plans = mergePlanConflicts(grade, date, date),
-    multi = m.from !== m.to;
-  return `<div class="mg-day">${multi ? `<p class="muted">Μέρος του ενιαίου τμήματος «${esc(m.name)}» (${esc(mergeRangeText({ date: m.from, dateTo: m.to }))}). Όλες οι ημέρες: καρτέλα «Ενιαίο τμήμα».</p>` : ''}<div class="grid"><label class="field">Όνομα<input id="mgName" maxlength="60" value="${esc(m.name)}" placeholder="π.χ. ${esc(grade)}" oninput="mgSet('name',this.value)"></label></div><div class="mg-groups"><span class="muted">Τμήματα και ομάδες που ενώνονται:</span><div class="checks">${groups.map(g => `<label><input type="checkbox" data-mgg="${g.id}" ${m.groupIds.includes(g.id) ? 'checked' : ''} onchange="mgSet('group',this.dataset.mgg,this.checked)"> ${esc(g.name)}</label>`).join('')}</div></div>${mergeGridHTML(m, [date])}${plans.length ? '<div class="notice">Αυτή την ημέρα υπάρχει τροποποίηση του προγράμματος με τα τμήματα· με την αποθήκευση του ενιαίου τμήματος καταργείται.</div>' : ''}<div class="notice${issue ? '' : ' success'}" id="mgIssue">${issue ? esc(issue) : 'Έτοιμο για αποθήκευση.'}</div><div class="row dp-actions"><button type="button" class="primary" onclick="mgSave()">Αποθήκευση ενιαίου τμήματος</button><button type="button" onclick="mgCancel()">Ακύρωση</button>${m.id ? `<button type="button" onclick="mgPrint('${m.id}')">🖨 Εκτύπωση</button><button type="button" class="danger" onclick="mergeDropDay('${m.id}','${date}')">${multi ? 'Χωρίς ενιαίο τμήμα αυτή την ημέρα' : 'Διαγραφή ενιαίου τμήματος'}</button>` : ''}</div></div>`;
+    days = mergeDays(m),
+    issue = mergeIssue(m, days),
+    plans = validISODate(m.from) && validISODate(m.to) ? mergePlanConflicts(grade, m.from, m.to) : [],
+    multi = days.length > 1;
+  return `<div class="mg-day"><div class="grid"><label class="field">Από<input type="date" id="mgFrom" value="${esc(m.from)}" min="${esc(data.calendar.start)}" max="${esc(data.calendar.end)}" onchange="mgSet('from',this.value)"></label><label class="field">Έως και<input type="date" id="mgTo" value="${esc(m.to)}" min="${esc(m.from || data.calendar.start)}" max="${esc(data.calendar.end)}" onchange="mgSet('to',this.value)"></label><label class="field">Όνομα<input id="mgName" maxlength="60" value="${esc(m.name)}" placeholder="π.χ. ${esc(grade)}" oninput="mgSet('name',this.value)"></label></div><p class="muted">Για μία ημέρα, «Από» και «Έως και» ίδια· για πολυήμερη εκδρομή, στο «Έως και» η τελευταία ημέρα.</p><div class="mg-groups"><span class="muted">Τμήματα και ομάδες που ενώνονται:</span><div class="checks">${groups.map(g => `<label><input type="checkbox" data-mgg="${g.id}" ${m.groupIds.includes(g.id) ? 'checked' : ''} onchange="mgSet('group',this.dataset.mgg,this.checked)"> ${esc(g.name)}</label>`).join('')}</div></div>${days.length && days.length <= MERGE_MAX_DAYS ? mergeGridHTML(m, days, date) : ''}${days.length ? mergeTripNoticeHTML(m, days) : ''}${plans.length ? `<div class="notice">${esc([...new Set(plans.map(e => dayLabel(e.date)))].join(', '))}: υπάρχει τροποποίηση του προγράμματος με τα τμήματα· με την αποθήκευση του ενιαίου τμήματος καταργείται.</div>` : ''}<div class="notice${issue ? '' : ' success'}" id="mgIssue">${issue ? esc(issue) : 'Έτοιμο για αποθήκευση.'}</div><div class="row dp-actions"><button type="button" class="primary" onclick="mgSave()">Αποθήκευση ενιαίου τμήματος</button><button type="button" onclick="mgCancel()">Ακύρωση</button>${m.id ? `<button type="button" onclick="mgPrint('${m.id}')">🖨 Εκτύπωση</button>${multi && date >= m.from && date <= m.to ? `<button type="button" class="danger" onclick="mergeDropDay('${m.id}','${date}')">Χωρίς ενιαίο τμήμα αυτή την ημέρα</button>` : ''}<button type="button" class="danger" onclick="mgRemove('${m.id}')">Διαγραφή ενιαίου τμήματος</button>` : ''}</div></div>`;
 }
 // «Με τα τμήματα ως έχουν» ενώ υπάρχει ενιαίο τμήμα: πρώτα αφαιρείται η ημέρα από το ενιαίο τμήμα
 function mergeDayBlockedHTML(mg, date) {
@@ -18098,6 +18099,431 @@ function mergeDropDay(id, date) {
     rest.length ? 'Χωρίς ενιαίο τμήμα στις ' + dayLabel(date) + '.' : 'Διαγράφηκε το ενιαίο τμήμα «' + x.name + '».'
   );
   return true;
+}
+/* ---------- 2.4 (τελική): μεταφορά μαθήματος σε άλλη ημέρα της ίδιας εβδομάδας (μόνο ο διαχειριστής) ----------
+   Π.χ. τα Θρησκευτικά του Β1 (Παρασκευή 3η) γίνονται την Τετάρτη 2η: σε ώρα χωρίς μάθημα ή με ανταλλαγή με το μάθημα
+   εκείνης της ώρας (που πηγαίνει την Παρασκευή 3η). Το μάθημα φεύγει από τη μία ημέρα και έρχεται στην άλλη για όλα:
+   πρόγραμμα της ημέρας, Καταγραφή ωρών, αναπληρώσεις, εκτυπώσεις, στατιστικά (οι προβλεπόμενες ώρες μένουν ίδιες στο
+   σύνολο). Καταγράφεται την ημέρα που γίνεται. Στη μνήμη data.dayMoves· στο αρχείο μαζί με τις καταγραφές (type 'move').
+   Οι παλαιότερες εκδόσεις δεν διαβάζουν δεδομένα με μεταφορά (μέχρι την ενημέρωση), χωρίς να χαθεί τίποτα. */
+const MOVE_REASON = 'Μεταφορά μαθήματος σε άλλη ημέρα',
+  MOVE_KEYS = [
+    'id',
+    'type',
+    'date',
+    'toDate',
+    'grade',
+    'groupIds',
+    'hours',
+    'slotSnapshots',
+    'fromHour',
+    'toHour',
+    'slot',
+    'swapSlot',
+    'reason',
+    'planReason',
+    'planOther',
+    'createdAt',
+    'updatedAt',
+    'by',
+    'editedBy'
+  ];
+let mvDraft = null; // η φόρμα: { date, grade, lesson: 'τμήμα|ώρα', to, hour, reason, other }
+function isDayMove(e) {
+  return !!e && e.type === 'move';
+}
+function moveSplit(d) {
+  const moved = (d.events || []).filter(isDayMove),
+    byId = new Map((Array.isArray(d.dayMoves) ? d.dayMoves : []).map(m => [m.id, m]));
+  if (moved.length) d.events = d.events.filter(e => !isDayMove(e));
+  for (const m of moved) byId.set(m.id, m);
+  d.dayMoves = [...byId.values()];
+}
+function moveValidate(m, eventIds = new Set()) {
+  const id = x => typeof x === 'string' && /^[A-Za-z0-9_-]{1,100}$/.test(x),
+    str = (x, n) => typeof x === 'string' && x.length <= n,
+    hour = x => Number.isInteger(x) && x >= 1 && x <= 7,
+    slot = (s, date, h) =>
+      !!s &&
+      typeof s === 'object' &&
+      !Array.isArray(s) &&
+      id(s.id) &&
+      id(s.periodId) &&
+      s.groupId === m.groupIds[0] &&
+      id(s.subjectId) &&
+      !s.joint &&
+      s.day === weekday(date) &&
+      s.hour === h &&
+      Object.values(s).every(v => v === null || ['string', 'number', 'boolean'].includes(typeof v));
+  if (
+    !m ||
+    typeof m !== 'object' ||
+    Array.isArray(m) ||
+    m.type !== 'move' ||
+    Object.keys(m).some(k => !MOVE_KEYS.includes(k)) ||
+    !id(m.id) ||
+    eventIds.has(m.id) ||
+    !validISODate(m.date) ||
+    !validISODate(m.toDate) ||
+    m.date === m.toDate ||
+    weekday(m.date) < 0 ||
+    weekday(m.toDate) < 0 ||
+    isoMonday(m.date) !== isoMonday(m.toDate) ||
+    !GRADES.includes(m.grade) ||
+    !Array.isArray(m.groupIds) ||
+    m.groupIds.length !== 1 ||
+    !id(m.groupIds[0]) ||
+    !Array.isArray(m.hours) ||
+    m.hours.length ||
+    !Array.isArray(m.slotSnapshots) ||
+    m.slotSnapshots.length ||
+    !hour(m.fromHour) ||
+    !hour(m.toHour) ||
+    !slot(m.slot, m.date, m.fromHour) ||
+    (m.swapSlot !== undefined && !slot(m.swapSlot, m.toDate, m.toHour)) ||
+    m.reason !== MOVE_REASON ||
+    !str(m.planReason, 300) ||
+    !m.planReason.trim() ||
+    (m.planOther !== undefined && !str(m.planOther, 300)) ||
+    ['createdAt', 'updatedAt'].some(k => m[k] !== undefined && !str(m[k], 40)) ||
+    ['by', 'editedBy'].some(
+      k => m[k] !== undefined && !(typeof m[k] === 'string' && /^[A-Za-z0-9._-]{1,100}$/.test(m[k]))
+    )
+  )
+    throw Error('Μη συμβατή μεταφορά μαθήματος.');
+}
+function moveValidateAll(d) {
+  const eventIds = new Set((d.events || []).filter(e => !isDayMove(e)).map(e => e?.id)),
+    seen = new Set();
+  if (d.dayMoves !== undefined && !Array.isArray(d.dayMoves)) throw Error('Μη συμβατές μεταφορές μαθημάτων.');
+  for (const m of [...(d.events || []).filter(isDayMove), ...(d.dayMoves || [])]) {
+    moveValidate(m, eventIds);
+    if (seen.has(m.id)) throw Error('Διπλή μεταφορά μαθήματος.');
+    seen.add(m.id);
+  }
+}
+/* ---------- τα μαθήματα της ημέρας με τις μεταφορές ----------
+   Μετά το πρόγραμμα των καταγραφών της ημέρας: φεύγει το μάθημα από την ημέρα του (αν είναι ακόμη εκεί) και έρχεται
+   στη νέα ώρα (αν είναι ελεύθερη)· με ανταλλαγή, το ίδιο για το άλλο μάθημα. Ίδιο αποτέλεσμα όσες φορές κι αν γίνει. */
+function moveSlot(m, side) {
+  const a = side === 'a',
+    s = a ? m.slot : m.swapSlot,
+    to = a ? m.toDate : m.date;
+  return {
+    ...s,
+    id: 'mv' + m.id + side,
+    day: weekday(to),
+    hour: a ? m.toHour : m.fromHour,
+    movedFrom: a ? m.date : m.toDate
+  };
+}
+function moveSlotsOn(date, slots, periodId = '') {
+  const list = data.dayMoves;
+  if (!list?.length) return slots;
+  const ms = list.filter(m => (m.date === date || m.toDate === date) && (!periodId || m.slot.periodId === periodId));
+  if (!ms.length) return slots;
+  const map = new Map(slots.map(s => [s.groupId + '|' + s.hour, s])),
+    here = (k, x) => {
+      const s = map.get(k);
+      return !!s && !s.movedFrom && !s.manual && s.subjectId === x.subjectId && !s.joint;
+    };
+  for (const m of ms) {
+    const g = m.groupIds[0];
+    if (m.date === date) {
+      const k = g + '|' + m.fromHour;
+      if (here(k, m.slot)) map.delete(k);
+      if (m.swapSlot && !map.has(k)) map.set(k, moveSlot(m, 'b'));
+    } else {
+      const k = g + '|' + m.toHour;
+      if (m.swapSlot && here(k, m.swapSlot)) map.delete(k);
+      if (!map.has(k)) map.set(k, moveSlot(m, 'a'));
+    }
+  }
+  return [...map.values()];
+}
+function moveList() {
+  return [...(data.dayMoves || [])].sort((a, b) => a.date.localeCompare(b.date) || a.fromHour - b.fromHour);
+}
+function moveName(m, swap = false) {
+  return snapshotCourseName(swap ? m.swapSlot : m.slot);
+}
+function moveShort(d) {
+  return DAYS[weekday(d)] + ' ' + shortDate(d);
+}
+// σημειώσεις για το τμήμα την ημέρα (Καταγραφή ωρών, Πρόγραμμα ημέρας, εκτύπωση)
+function moveNotes(date, gid) {
+  const out = [];
+  for (const m of moveList()) {
+    if (m.groupIds[0] !== gid) continue;
+    if (m.date === date)
+      out.push(
+        moveName(m) +
+          ' (' +
+          m.fromHour +
+          'η) → ' +
+          moveShort(m.toDate) +
+          ' ' +
+          m.toHour +
+          'η' +
+          (m.swapSlot ? ' · ' + m.fromHour + 'η ' + moveName(m, true) + ' (από ' + moveShort(m.toDate) + ')' : '')
+      );
+    if (m.toDate === date)
+      out.push(
+        m.toHour +
+          'η ' +
+          moveName(m) +
+          ' (από ' +
+          moveShort(m.date) +
+          ')' +
+          (m.swapSlot
+            ? ' · ' + moveName(m, true) + ' (' + m.toHour + 'η) → ' + moveShort(m.date) + ' ' + m.fromHour + 'η'
+            : '')
+      );
+  }
+  return out;
+}
+function moveDayHas(date, gids) {
+  return (data.dayMoves || []).some(m => (m.date === date || m.toDate === date) && gids.includes(m.groupIds[0]));
+}
+/* ---------- έλεγχοι ---------- */
+function moveWeekDays(date) {
+  const mon = isoMonday(date);
+  return statDays(mon, isoAddDays(mon, 4));
+}
+// καταγραφές του τμήματος την ημέρα (και απώλειες χρόνου)· hour: μόνο αυτής της ώρας (στο πρόγραμμα της ημέρας)
+function moveRecords(date, gid, hour = 0) {
+  const hit = s => !s.manual && s.groupId === gid && (!hour || s.hour === hour);
+  return [...data.events.filter(e => !isDayPlan(e)), ...(data.timeLosses || [])].filter(
+    e => e.date === date && e.scheduleMode !== 'manual' && (e.slotSnapshots || []).some(hit)
+  );
+}
+// τα μαθήματα που μπορούν να πάνε σε άλλη ημέρα: στην ώρα τους, χωρίς συνδιδασκαλία, χωρίς καταγραφή
+function moveLessons(date, grade) {
+  return dayGradeGids(grade).flatMap(g =>
+    dayState(date, g)
+      .lessons.filter(L => !L.s.joint && !L.s.movedFrom && L.act === L.hour && !L.recs.length)
+      .map(L => ({ gid: g, L, key: g + '|' + L.hour }))
+  );
+}
+// η ώρα στην άλλη ημέρα: ελεύθερη, ανταλλαγή με το μάθημα εκείνης της ώρας ή «δεν γίνεται»
+function moveTarget(gid, to, h) {
+  const st = dayState(to, gid),
+    base = st.lessons.find(L => L.hour === h),
+    there = st.lessons.find(L => L.act === h && L !== base);
+  if (base) {
+    if (base.s.joint) return { ok: false, text: base.name + ' (συνδιδασκαλία)' };
+    if (base.s.movedFrom) return { ok: false, text: base.name + ' (μεταφορά)' };
+    if (base.act !== h) return { ok: false, text: 'μετακινημένο ' + base.name };
+    if (base.recs.length) return { ok: false, text: base.name + ' (έχει καταγραφή)' };
+    return { ok: true, swap: base, text: 'ανταλλαγή με ' + base.name };
+  }
+  if (there) return { ok: false, text: there.name + ' (από το πρόγραμμα της ημέρας)' };
+  const busy = dayBusyGroups(to, gid, h);
+  if (busy.length) return { ok: false, text: 'μάθημα σε ' + busy.map(gname).join(', ') + ' (κοινοί μαθητές)' };
+  return { ok: true, swap: null, text: 'ελεύθερη' };
+}
+// όλα τα προβλήματα της τάξης στις δύο ημέρες (όπως στο Πρόγραμμα ημέρας)
+function moveUnitIssues(date, gid) {
+  const us = dayUnitState(date, dayPlanGradeGids(date, dayGradeOf(gid)));
+  return dayUnitCheck(us, dayUnitAssigns(us));
+}
+function moveWithout(fn, list) {
+  const keep = data.dayMoves,
+    keepOcc = occCache,
+    keepShare = shareCache;
+  data.dayMoves = list;
+  occCache = new Map();
+  try {
+    return fn();
+  } finally {
+    data.dayMoves = keep;
+    occCache = keepOcc;
+    shareCache = keepShare;
+  }
+}
+// νέα / αλλαγμένα προβλήματα στις ημέρες της μεταφοράς αν γίνει η αλλαγή (next: οι μεταφορές μετά)
+function moveBreaks(days, gid, next) {
+  for (const d of days) {
+    const before = new Set(moveUnitIssues(d, gid)),
+      after = moveWithout(() => moveUnitIssues(d, gid), next).filter(t => !before.has(t));
+    if (after.length) return dayLabel(d) + ': ' + after[0];
+  }
+  return '';
+}
+function moveIssue(d) {
+  if (!d.lesson) return 'Επιλέξτε μάθημα.';
+  if (!d.to) return 'Επιλέξτε ημέρα.';
+  if (!d.hour) return 'Επιλέξτε ώρα.';
+  const gid = d.lesson.split('|')[0],
+    L = moveLessons(d.date, d.grade).find(x => x.key === d.lesson)?.L;
+  if (!L) return 'Το μάθημα δεν μπορεί να μεταφερθεί (έχει καταγραφή ή άλλαξε ώρα).';
+  if (!moveWeekDays(d.date).includes(d.to) || d.to === d.date)
+    return 'Επιλέξτε άλλη διδακτική ημέρα της ίδιας εβδομάδας.';
+  for (const x of [d.date, d.to]) if (mergeOnDay(x, d.grade)) return dayLabel(x) + ': η τάξη έχει ενιαίο τμήμα.';
+  const t = moveTarget(gid, d.to, d.hour);
+  if (!t.ok) return 'Η ' + d.hour + 'η της ' + dayLabel(d.to) + ' δεν γίνεται: ' + t.text + '.';
+  if (!PLAN_REASONS.includes(d.reason)) return 'Επιλέξτε τον λόγο.';
+  if (d.reason === 'Άλλο' && !d.other.trim()) return 'Γράψτε τον λόγο.';
+  return '';
+}
+/* ---------- φόρμα στο Πρόγραμμα ημέρας (τμήματα ως έχουν) ---------- */
+function mvState(date, grade) {
+  if (!mvDraft || mvDraft.date !== date || mvDraft.grade !== grade)
+    mvDraft = { date, grade, lesson: '', to: '', hour: 0, reason: '', other: '', open: false };
+  return mvDraft;
+}
+function moveFormHTML(date, grade) {
+  const d = mvState(date, grade),
+    lessons = moveLessons(date, grade),
+    days = moveWeekDays(date).filter(x => x !== date),
+    gid = d.lesson.split('|')[0],
+    hours = d.lesson && d.to ? [1, 2, 3, 4, 5, 6, 7].map(h => [h, moveTarget(gid, d.to, h)]) : [],
+    issue = moveIssue(d),
+    week = moveList().filter(m => m.grade === grade && isoMonday(m.date) === isoMonday(date));
+  return `<details class="mv-box" ${d.open || week.length ? 'open' : ''} ontoggle="mvDraft&&(mvDraft.open=this.open)"><summary>Μεταφορά μαθήματος σε άλλη ημέρα της εβδομάδας</summary>
+ <div class="grid"><label class="field">Μάθημα<select id="mvLesson" onchange="mvSet('lesson',this.value)"><option value="">— Επιλέξτε μάθημα —</option>${lessons.map(x => `<option value="${x.key}" ${x.key === d.lesson ? 'selected' : ''}>${esc(gname(x.gid) + ' · ' + x.L.hour + 'η ' + x.L.name)}</option>`).join('')}</select></label><label class="field">Ημέρα<select id="mvDay" onchange="mvSet('to',this.value)"><option value="">— Επιλέξτε ημέρα —</option>${days.map(x => `<option value="${x}" ${x === d.to ? 'selected' : ''}>${esc(dayLabel(x))}</option>`).join('')}</select></label><label class="field">Ώρα<select id="mvHour" onchange="mvSet('hour',this.value)" ${hours.length ? '' : 'disabled'}><option value="">— Επιλέξτε ώρα —</option>${hours.map(([h, t]) => `<option value="${h}" ${h === d.hour ? 'selected' : ''} ${t.ok ? '' : 'disabled'}>${h}η · ${esc(t.text)}</option>`).join('')}</select></label><label class="field">Λόγος<select id="mvReason" onchange="mvSet('reason',this.value)"><option value="">— Επιλέξτε λόγο —</option>${PLAN_REASONS.map(r => `<option ${d.reason === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></label>${d.reason === 'Άλλο' ? `<label class="field">Περιγραφή του λόγου<input id="mvOther" maxlength="300" value="${esc(d.other)}" oninput="mvSet('other',this.value)"></label>` : ''}</div>
+ <p class="muted">Το μάθημα φεύγει από αυτή την ημέρα και γίνεται στην άλλη, σε ώρα χωρίς μάθημα ή με ανταλλαγή (το άλλο μάθημα έρχεται εδώ). Φαίνεται και στις δύο ημέρες· καταγράφεται την ημέρα που γίνεται.</p>
+ <div class="notice${issue ? '' : ' success'}" id="mvIssue">${issue ? esc(issue) : 'Έτοιμο για μεταφορά.'}</div>
+ <div class="row mv-actions"><button type="button" class="primary" onclick="mvSave()">Μεταφορά</button></div>
+ ${week.length ? `<h4>Μεταφορές της εβδομάδας</h4><div class="dp-list">${week.map(moveItemHTML).join('')}</div>` : ''}</details>`;
+}
+function moveItemHTML(m) {
+  return `<div class="dp-item"><div class="dp-item-main"><strong>${esc(gname(m.groupIds[0]) + ' · ' + moveName(m))}</strong><span>${esc(dayLabel(m.date) + ' ' + m.fromHour + 'η → ' + dayLabel(m.toDate) + ' ' + m.toHour + 'η' + (m.swapSlot ? ' · ανταλλαγή με ' + moveName(m, true) : ''))}</span><span class="muted">${esc('Λόγος: ' + (m.planReason === 'Άλλο' ? m.planOther || 'Άλλο' : m.planReason))}</span></div><div class="row"><button type="button" onclick="moveOpen('${m.id}')">Άνοιγμα</button><button type="button" class="danger" onclick="moveRemove('${m.id}')">Διαγραφή</button></div></div>`;
+}
+function mvSet(field, value) {
+  const d = mvDraft;
+  if (!d) return;
+  if (field === 'lesson') {
+    d.lesson = value;
+    d.hour = 0;
+  } else if (field === 'to') {
+    d.to = value;
+    d.hour = 0;
+  } else if (field === 'hour') d.hour = Number(value) || 0;
+  else if (field === 'reason') d.reason = value;
+  else if (field === 'other') {
+    d.other = String(value || '').slice(0, 300);
+    if ($('mvIssue')) {
+      const issue = moveIssue(d);
+      $('mvIssue').className = 'notice' + (issue ? '' : ' success');
+      $('mvIssue').textContent = issue || 'Έτοιμο για μεταφορά.';
+    }
+    return;
+  }
+  d.open = true;
+  if ($('apBox')) $('apBox').innerHTML = dayAdminBoxHTML();
+}
+function mvSave() {
+  const d = mvDraft;
+  if (!d || isUser()) return false;
+  const issue = moveIssue(d);
+  if (issue) return (warn(issue), false);
+  const [gid, k] = d.lesson.split('|'),
+    L = moveLessons(d.date, d.grade).find(x => x.key === d.lesson).L,
+    t = moveTarget(gid, d.to, d.hour),
+    clean = s => {
+      const { movedHour: _m, subjectName: _n, groupName: _g, groupGrade: _r, ...rest } = s;
+      return { ...rest, joint: '' };
+    },
+    rec = {
+      id: uid(),
+      type: 'move',
+      date: d.date,
+      toDate: d.to,
+      grade: d.grade,
+      groupIds: [gid],
+      hours: [],
+      slotSnapshots: [],
+      fromHour: Number(k),
+      toHour: d.hour,
+      slot: clean(L.s),
+      ...(t.swap ? { swapSlot: clean(t.swap.s) } : {}),
+      reason: MOVE_REASON,
+      planReason: d.reason,
+      ...(d.reason === 'Άλλο' ? { planOther: d.other.trim() } : {}),
+      createdAt: new Date().toISOString(),
+      ...ownerFields()
+    },
+    next = [...(data.dayMoves || []), rec];
+  try {
+    moveValidate(rec);
+  } catch (err) {
+    return (warn(err.message), false);
+  }
+  const why = moveBreaks([d.date, d.to], gid, next);
+  if (why) return (warn(why), false);
+  data.dayMoves = next;
+  occCache = new Map();
+  mvDraft = { ...d, lesson: '', to: '', hour: 0, open: true };
+  render();
+  showToast(
+    'Μεταφέρθηκε: ' + gname(gid) + ' · ' + moveName(rec) + ' → ' + dayLabel(rec.toDate) + ' ' + rec.toHour + 'η.'
+  );
+  return true;
+}
+// διαγραφή: μόνο χωρίς καταγραφές του τμήματος τις δύο ημέρες (γίνονται με τη μεταφορά) και χωρίς πρόγραμμα ημέρας
+function moveRemove(id) {
+  const m = (data.dayMoves || []).find(x => x.id === id);
+  if (!m || isUser()) return false;
+  const gid = m.groupIds[0];
+  for (const d of [m.date, m.toDate]) {
+    if (moveRecords(d, gid).length)
+      return (
+        warn(
+          gname(gid) +
+            ': υπάρχουν καταγραφές την ' +
+            dayLabel(d) +
+            ' (έγιναν με τη μεταφορά). Διορθώστε ή διαγράψτε τις πρώτα.'
+        ),
+        false
+      );
+    if (dayPlanEvents(d, gid).length)
+      return (
+        warn(gname(gid) + ': υπάρχει τροποποίηση του προγράμματος την ' + dayLabel(d) + '. Διαγράψτε την πρώτα.'),
+        false
+      );
+  }
+  const next = data.dayMoves.filter(x => x.id !== id),
+    why = moveBreaks([m.date, m.toDate], gid, next);
+  if (why) return (warn(why), false);
+  if (
+    !confirm(
+      'Να διαγραφεί η μεταφορά «' +
+        gname(gid) +
+        ' · ' +
+        moveName(m) +
+        '» (' +
+        dayLabel(m.date) +
+        ' → ' +
+        dayLabel(m.toDate) +
+        ');'
+    )
+  )
+    return false;
+  data.dayMoves = next;
+  occCache = new Map();
+  render();
+  showToast('Διαγράφηκε η μεταφορά.');
+  return true;
+}
+function moveOpen(id) {
+  const m = (data.dayMoves || []).find(x => x.id === id);
+  if (!m || !apLeaveOk()) return;
+  apDate = m.date;
+  apGrade = m.grade;
+  apMode = 'groups';
+  planEdit = null;
+  mvDraft = { date: m.date, grade: m.grade, lesson: '', to: '', hour: 0, reason: '', other: '', open: true };
+  if (page === 'dayplan') render();
+  else go('dayplan');
+  $('apBox')?.scrollIntoView?.({ block: 'start' });
+}
+// στις λίστες του Προγράμματος ημέρας
+function moveDayListHTML(from, to) {
+  const list = moveList().filter(
+    m => (m.date >= from && m.date <= to) || (m.toDate >= from && m.toDate <= to) || m.date > schoolToday()
+  );
+  return `<h3>Μεταφορές μαθημάτων</h3>${list.length ? `<div class="dp-list">${list.map(moveItemHTML).join('')}</div>` : '<p class="muted">Καμία στο διάστημα.</p>'}`;
 }
 function examsPanelHTML(r) {
   const m = new Map(),
@@ -18240,6 +18666,8 @@ tlRemove = guardMutation(tlRemove);
 mgSave = guardMutation(mgSave);
 mgRemove = guardMutation(mgRemove);
 mergeDropDay = guardMutation(mergeDropDay);
+mvSave = guardMutation(mvSave);
+moveRemove = guardMutation(moveRemove);
 saveCombo = guardMutation(saveCombo);
 removeCombo = guardMutation(removeCombo);
 setGroupStudents = guardMutation(setGroupStudents);
